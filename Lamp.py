@@ -1,14 +1,25 @@
 import datetime
 import time
 import MySQLdb
+import pi_switch
 
-def LampPowerOn(nId, sName, nPowerOn):
+def LampCmd(sCmd):
+	sender = pi_switch.RCSwitchSender()
+	sender.enableTransmit(0) # Use WiringPi pin 0
+	sender.sendDecimal(int(sCmd), 24)
+	print "RF Command: %d" % int(sCmd)
+
+	time.sleep(1)
+	return 'Done!'
+
+def LampPowerOn(nId, sName, nPowerOn, sCmdOn):
 	#Lamp power is already on
 	if (nPowerOn == 1):
 		return;
 
-	#TODO: Send command to Nexa Power Switch
-
+	#Send command to Nexa Power Switch
+	if (len(sCmdOn) > 0):
+		LampCmd(sCmdOn)
 
 	#Update database
 	dbPowerOn = MySQLdb.connect("localhost", "hauser", "homeautomation", "homeautomation")
@@ -29,13 +40,14 @@ def LampPowerOn(nId, sName, nPowerOn):
 	print '%s: Sending power on to %s' % (datetime.datetime.now(), sName)
 	return;
 
-def LampPowerOff(nId, sName, nPowerOn):
+def LampPowerOff(nId, sName, nPowerOn, sCmdOff):
 	#Lamp power is already off
 	if (nPowerOn == 0):
 		return;
 
-	#TODO: Send command to Nexa Power Switch
-
+	#Send command to Nexa Power Switch
+	if (len(sCmdOff) > 0):
+		LampCmd(sCmdOff)
 
 	#Update database
 	dbPowerOff = MySQLdb.connect("localhost", "hauser", "homeautomation", "homeautomation")
@@ -66,6 +78,8 @@ def LoopLampObjects():
 	dbName = ''
 	dbIO = ''
 	dbPowerOn = 0
+	dbCmdOn = ''
+	dbCmdOff = ''
 	dbWeekday = 0
 	dbOn = ''
 	dbOff = ''
@@ -88,17 +102,19 @@ def LoopLampObjects():
 				continue
 			#Last object shouldn't be on
 			elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0):
-				LampPowerOff(dbId, dbName, dbPowerOn)
+				LampPowerOff(dbId, dbName, dbPowerOn, dbCmdOff)
 				
 			#Move database row to variables
 			dbId = row[0]
 			dbName = row[1]
 			dbIO = row[2]
 			dbPowerOn = row[3]
-			dbWeekday = row[4]
-			dbOn = row[5]
-			dbOff = row[6]
-			dbMode = row[7]
+			dbCmdOn = row[4]
+			dbCmdOff = row[5]
+			dbWeekday = row[6]
+			dbOn = row[7]
+			dbOff = row[8]
+			dbMode = row[9]
 			
 			#Calculate DateTime for start and stop
 			if (nWeekdayNow == dbWeekday):
@@ -118,7 +134,7 @@ def LoopLampObjects():
 			#Start object
 			if (dtNow > dtStart and dtNow < dtStop):
 				nPowerOn = 1
-				LampPowerOn(dbId, dbName, dbPowerOn)
+				LampPowerOn(dbId, dbName, dbPowerOn, dbCmdOn)
 			else:
 				nPowerOn = 0
 			
@@ -127,7 +143,7 @@ def LoopLampObjects():
 		
 		#Power off last object if not started
 		if (dbId > 0 and nPowerOn == 0):
-			LampPowerOff(dbId, dbName, dbPowerOn)
+			LampPowerOff(dbId, dbName, dbPowerOn, dbCmdOff)
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
