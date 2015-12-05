@@ -1,15 +1,19 @@
-# SunriseSunsetCalculator by jebeaudet
+# Based on SunriseSunsetCalculator by jebeaudet
 # https://github.com/jebeaudet/SunriseSunsetCalculator
 
 import math
 import datetime
 import time
 
-#Parameters
+#---------------------------------------------------------------------------# 
+# Parameters
+#---------------------------------------------------------------------------# 
 zenith = 90.83333	#Sun's zenith for sunrise/sunset
 localOffset = 1		#Offset from UTC (GMT)
 
-#Adjust Angle
+#---------------------------------------------------------------------------# 
+# Adjust angle
+#---------------------------------------------------------------------------# 
 def adjustAngle(L):
     if L < 0:
         return L + 360
@@ -17,7 +21,9 @@ def adjustAngle(L):
         return L - 360
     return L
 
-#Adjust Time
+#---------------------------------------------------------------------------# 
+# Adjust function
+#---------------------------------------------------------------------------# 
 def adjustTime(L):
     if L < 0:
         return L + 24
@@ -25,7 +31,9 @@ def adjustTime(L):
         return L - 24
     return L
 
-#Sunrise
+#---------------------------------------------------------------------------# 
+# Get sunrise
+#---------------------------------------------------------------------------# 
 def sunrise(date, latitude, longitude):
 	#Date
 	day = date.day
@@ -85,7 +93,9 @@ def sunrise(date, latitude, longitude):
 	#Return
 	return datetime.datetime(year, month, day, h_rise, m_rise)
 
-#Sunset
+#---------------------------------------------------------------------------# 
+# Get sunset
+#---------------------------------------------------------------------------# 
 def sunset(date, latitude, longitude):
 	#Date
 	day = date.day

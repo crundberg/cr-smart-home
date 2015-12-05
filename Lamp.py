@@ -1,47 +1,40 @@
 import datetime
 import time
 import MySQLdb
+import pi_switch
+from Config import Config
 
-def LampPowerOn(nId, sName, nPowerOn):
-	#Lamp power is already on
-	if (nPowerOn == 1):
-		return;
+#---------------------------------------------------------------------------# 
+# Send RF command
+#---------------------------------------------------------------------------# 
+def LampCmd(sCmd):
+	# Send command
+	sender = pi_switch.RCSwitchSender()
+	sender.enableTransmit(Config.RPi_Pin_Emitter)
+	sender.sendDecimal(int(sCmd), 24)
 
-	#TODO: Send command to Nexa Power Switch
+	# Send command again
+	time.sleep(0.5)
+	sender.sendDecimal(int(sCmd), 24)
+
+	# Return
+	return 'Done!'
 
 
-	#Update database
-	dbPowerOn = MySQLdb.connect("localhost", "hauser", "homeautomation", "homeautomation")
-	cursorPowerOn = dbPowerOn.cursor()
+#---------------------------------------------------------------------------# 
+# Change status of lamp
+#---------------------------------------------------------------------------# 
+def LampPower(nId, sName, nPowerOn, sCmd):
 
-	sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = 1 WHERE LampId = %d" % nId
-
-	try:
-		cursorPowerOn.execute(sSQL)
-		dbPowerOn.commit()
-	except:
-		dbPowerOn.rollback()
-	finally:
-		cursorPowerOn.close()
-		dbPowerOn.close()
-
-	#Log
-	print '%s: Sending power on to %s' % (datetime.datetime.now(), sName)
-	return;
-
-def LampPowerOff(nId, sName, nPowerOn):
-	#Lamp power is already off
-	if (nPowerOn == 0):
-		return;
-
-	#TODO: Send command to Nexa Power Switch
-
+	#Send command to Nexa Power Switch
+	if (len(sCmd) > 0):
+		LampCmd(sCmd)
 
 	#Update database
-	dbPowerOff = MySQLdb.connect("localhost", "hauser", "homeautomation", "homeautomation")
+	dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursorPowerOff = dbPowerOff.cursor()
 
-	sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = 0 WHERE LampId = %d" % nId
+	sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = %d, LampPowerOnMan = %d WHERE LampId = %d" % (nPowerOn, nPowerOn, nId)
 
 	try:
 		cursorPowerOff.execute(sSQL)
@@ -52,9 +45,14 @@ def LampPowerOff(nId, sName, nPowerOn):
 		dbPowerOff.close()
 
 	#Log
-	print "%s: Sending power off to %s" % (datetime.datetime.now(), sName)
-	return;
+	if (nPowerOn == 1):
+		print "%s: Sending power on to %s (%s)" % (datetime.datetime.now(), sName, sCmd)
+	else:
+		print "%s: Sending power off to %s (%s)" % (datetime.datetime.now(), sName, sCmd)
 
+#---------------------------------------------------------------------------# 
+# Loop all lamp objects
+#---------------------------------------------------------------------------# 
 def LoopLampObjects():
 	#DateTime
 	dtNow = datetime.datetime.now()
@@ -66,6 +64,8 @@ def LoopLampObjects():
 	dbName = ''
 	dbIO = ''
 	dbPowerOn = 0
+	dbCmdOn = ''
+	dbCmdOff = ''
 	dbWeekday = 0
 	dbOn = ''
 	dbOff = ''
@@ -73,7 +73,7 @@ def LoopLampObjects():
 	nPowerOn = 0
 
 	#Connect to MySQL
-	db = MySQLdb.connect("localhost", "hauser", "homeautomation", "homeautomation")
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursor = db.cursor()
 
 	try:
@@ -87,18 +87,20 @@ def LoopLampObjects():
 			if (dbId == row[0] and nPowerOn == 1):
 				continue
 			#Last object shouldn't be on
-			elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0):
-				LampPowerOff(dbId, dbName, dbPowerOn)
+			elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0 and dbPowerOn <> 0):
+				LampPower(dbId, dbName, 0, dbCmdOff)
 				
 			#Move database row to variables
 			dbId = row[0]
 			dbName = row[1]
 			dbIO = row[2]
 			dbPowerOn = row[3]
-			dbWeekday = row[4]
-			dbOn = row[5]
-			dbOff = row[6]
-			dbMode = row[7]
+			dbCmdOn = row[4]
+			dbCmdOff = row[5]
+			dbWeekday = row[6]
+			dbOn = row[7]
+			dbOff = row[8]
+			dbMode = row[9]
 			
 			#Calculate DateTime for start and stop
 			if (nWeekdayNow == dbWeekday):
@@ -118,16 +120,16 @@ def LoopLampObjects():
 			#Start object
 			if (dtNow > dtStart and dtNow < dtStop):
 				nPowerOn = 1
-				LampPowerOn(dbId, dbName, dbPowerOn)
+
+				if (dbPowerOn <> 1):
+					LampPower(dbId, dbName, 1, dbCmdOn)
 			else:
 				nPowerOn = 0
 			
-			#Log
-			#print '%s: %s (%s), Weekday: %s, Start: %s, Stop: %s, Active: %s, PowerOn: %d' % (dbId, dbName, dbIO, dbWeekday, dtStart, dtStop, dbMode, dbPowerOn)
-		
 		#Power off last object if not started
-		if (dbId > 0 and nPowerOn == 0):
-			LampPowerOff(dbId, dbName, dbPowerOn)
+		if (dbId > 0 and nPowerOn == 0 and dbPowerOn <> 0):
+			LampPower(dbId, dbName, 0, dbCmdOff)
+
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
