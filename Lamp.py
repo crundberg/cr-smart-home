@@ -50,6 +50,7 @@ def LampPower(nId, sName, nPowerOn, sCmd):
 	else:
 		print "%s: Sending power off to %s (%s)" % (datetime.datetime.now(), sName, sCmd)
 
+
 #---------------------------------------------------------------------------# 
 # Loop all lamp objects
 #---------------------------------------------------------------------------# 
@@ -140,5 +141,3 @@ def LoopLampObjects():
 		#Close database connection
 		cursor.close()
 		db.close()
-
-	return;
