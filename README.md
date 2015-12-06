@@ -11,7 +11,7 @@ Here's a wiring example for a Raspberry Pi 2
 ![Wiring](http://www.crundberg.se/wp-content/uploads/2015/12/Breadboard.png)
 
 ## Install
-Comning soon 
+Coming soon 
 
 ## Start program
 Start the program with `sudo python main.py`
