@@ -2,12 +2,20 @@ import datetime
 import time
 import MySQLdb
 import pi_switch
+import logging
+import sys
 from Config import Config
+
+logger = logging.getLogger('home-automation')
 
 #---------------------------------------------------------------------------# 
 # Send RF command
 #---------------------------------------------------------------------------# 
 def LampCmd(sCmd):
+	if (len(sCmd) < 1):
+		logger.warning('Lamp command is empty!')
+		return 'Lamp command is empty!'
+
 	# Send command
 	sender = pi_switch.RCSwitchSender()
 	sender.enableTransmit(Config.RPi_Pin_Emitter)
@@ -26,10 +34,6 @@ def LampCmd(sCmd):
 #---------------------------------------------------------------------------# 
 def LampPower(nId, sName, nPowerOn, sCmd):
 
-	#Send command to Nexa Power Switch
-	if (len(sCmd) > 0):
-		LampCmd(sCmd)
-
 	#Update database
 	dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursorPowerOff = dbPowerOff.cursor()
@@ -39,16 +43,22 @@ def LampPower(nId, sName, nPowerOn, sCmd):
 	try:
 		cursorPowerOff.execute(sSQL)
 		dbPowerOff.commit()
-	except:
+	except MySQLdb.Error, e:
 		dbPowerOff.rollback()
+		logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+	except:
+		logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
 	finally:
 		dbPowerOff.close()
 
 	#Log
 	if (nPowerOn == 1):
-		print "%s: Sending power on to %s (%s)" % (datetime.datetime.now(), sName, sCmd)
+		logger.info("Sending power on to %s (Cmd: '%s')" % (sName, sCmd))
 	else:
-		print "%s: Sending power off to %s (%s)" % (datetime.datetime.now(), sName, sCmd)
+		logger.info("Sending power off to %s (Cmd: '%s')" % (sName, sCmd))
+
+	#Send command to Nexa Power Switch
+	LampCmd(sCmd)
 
 
 #---------------------------------------------------------------------------# 
@@ -134,9 +144,10 @@ def LoopLampObjects():
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
-			print 'MySQL Error [%d]: %s' % (e.args[0], e.args[1])
+			logger.Error('MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+
 		except IndexError:
-			print 'MySQL Error: %s' % str(e)
+			logger.Error('MySQL Error: %s' % str(e))
 	finally:
 		#Close database connection
 		cursor.close()
