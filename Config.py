@@ -11,9 +11,9 @@ class Config:
 
 	#---------------------------------------------------------------------------# 
 	# GPIO Pins on Raspberry Pi
-	#---------------------------------------------------------------------------# 
-	RPi_Pin_Transmitter = 2	# Use WiringPi pin 2
-	RPi_Pin_Emitter = 0	# Use WiringPi pin 0
+	#---------------------------------------------------------------------------#
+	RPi_Pin_Transmitter = 0	# Use WiringPi pin 0
+	RPi_Pin_Receiver = 2	# Use WiringPi pin 2
 
 	#---------------------------------------------------------------------------# 
 	# Logging

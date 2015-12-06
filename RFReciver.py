@@ -5,7 +5,7 @@ from Config import Config
 # Configure receiver
 #---------------------------------------------------------------------------# 
 receiver = RCSwitchReceiver()
-receiver.enableReceive(Config.RPi_Pin_Transmitter)
+receiver.enableReceive(Config.RPi_Pin_Receiver)
 
 num = 0
 

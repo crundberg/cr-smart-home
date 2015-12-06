@@ -1,7 +1,7 @@
 import time
-import Lamp
 import logging
 import logging.handlers
+from Lamp import Lamp
 from Config import Config
 
 def main():
@@ -24,8 +24,10 @@ def main():
 	#---------------------------------------------------------------------------# 
 	# Run program
 	#---------------------------------------------------------------------------# 
+	lamp = Lamp()
+
 	while True:
-		Lamp.LoopLampObjects()
+		lamp.LoopLampObjects()
 		time.sleep(60)
 
 if __name__ == '__main__':
