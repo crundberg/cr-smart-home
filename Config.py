@@ -18,13 +18,20 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	# Logging
 	#---------------------------------------------------------------------------# 
-	Log_Filename = '/var/www/html/ha/logs/main.log'
-	Log_Level = logging.INFO
+	Log_Filename = '/var/www/html/ha/logs/main.log' # Path to logfile
+	Log_Level = logging.INFO        # Log level to save
+	Log_Heartbeat = 10              # Log heartbeat every x minut (0=Disable)
 
 	#---------------------------------------------------------------------------# 
 	# Database settings
 	#---------------------------------------------------------------------------# 
-	DbHost = "localhost"
-	DbUser = "hauser"
-	DbPassword = "homeautomation"
-	DbName = "homeautomation"
+	DbHost = "localhost"            # Hostname
+	DbUser = "hauser"               # Username
+	DbPassword = "homeautomation"   # Password
+	DbName = "homeautomation"       # Database name
+
+	#---------------------------------------------------------------------------# 
+	# RF command settings
+	#-----------------------------------------------------------------------
+	RF_Command_Repeat = 3	# Number of times to repeat command
+	RF_Command_Delay = 0	# Time in seconds between the repeats

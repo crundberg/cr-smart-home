@@ -24,13 +24,12 @@ class Lamp:
 			return 'Lamp command is empty!'
 	
 		# Send command
-		sender = pi_switch.RCSwitchSender()
-		sender.enableTransmit(Config.RPi_Pin_Transmitter)
-		sender.sendDecimal(int(sCmd), 24)
-	
-		# Send command again
-		time.sleep(0.5)
-		sender.sendDecimal(int(sCmd), 24)
+                for x in range(0, Config.RF_Command_Repeat):
+                        sender = pi_switch.RCSwitchSender()
+                        sender.enableTransmit(Config.RPi_Pin_Transmitter)
+                        sender.sendDecimal(int(sCmd), 24)
+                        logger.info("Nu!")
+                        time.sleep(Config.RF_Command_Delay)
 	
 		# Return
 		return 'Done!'
@@ -90,10 +89,11 @@ class Lamp:
 		dbMode = 0
 		nPowerOn = 0
 
-		#Heartbeat every 10 minutes
-		self.nHeartbeat += 1
+		#Log heartbeat
+		if (Config.Log_Heartbeat > 0):
+                        self.nHeartbeat += 1
 
-		if (self.nHeartbeat >= 10):
+		if (self.nHeartbeat >= Config.Log_Heartbeat):
 			self.nHeartbeat = 0
 			logger.info('Heartbeat')
 	

@@ -15,3 +15,4 @@ Coming soon
 
 ## Start program
 Start the program with `sudo python main.py`
+Start the API with `sudo python API.py`
