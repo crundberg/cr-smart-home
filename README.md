@@ -14,5 +14,4 @@ Here's a wiring example for a Raspberry Pi 2
 Coming soon 
 
 ## Start program
-Start the program with `sudo python main.py`
-Start the API with `sudo python API.py`
+Start the program with `sudo python main.py` and start the API with `sudo python API.py`
