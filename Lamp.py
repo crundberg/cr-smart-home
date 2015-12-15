@@ -28,7 +28,7 @@ class Lamp:
                         sender = pi_switch.RCSwitchSender()
                         sender.enableTransmit(Config.RPi_Pin_Transmitter)
                         sender.sendDecimal(int(sCmd), 24)
-                        logger.info("Nu!")
+                        
                         time.sleep(Config.RF_Command_Delay)
 	
 		# Return
