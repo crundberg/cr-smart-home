@@ -38,7 +38,7 @@ sudo python setup.py install
 Open configuration file for Apache
 `sudo nano /etc/apache2/sites-available/000-default.conf`
 
-Find the row `DocumentRoot /var/www` and replace it with `DocumentRoot DocumentRoot /home/pi/Documents/home-automation-webgui`.
+Find the row `DocumentRoot /var/www` and replace it with `DocumentRoot /home/pi/Documents/home-automation-webgui`.
 Also add the following code.
 
 ```
@@ -49,7 +49,7 @@ Also add the following code.
 </Directory>
 ```
 
-Restart Apache with `/etc/init.d/apache2 restart`
+Restart Apache with `sudo /etc/init.d/apache2 restart`
 
 ### Install Home-Automation
 ```
