@@ -18,9 +18,9 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	# Logging
 	#---------------------------------------------------------------------------# 
-	Log_Filename = '/var/www/html/ha/logs/main.log' # Path to logfile
+	Log_Filename = '/home/pi/Documents/home-automation-webgui/logs/main.log' # Path to logfile
 	Log_Level = logging.INFO        # Log level to save
-	Log_Heartbeat = 10              # Log heartbeat every x minut (0=Disable)
+	Log_Heartbeat = 60              # Log heartbeat every x minut (0=Disable)
 
 	#---------------------------------------------------------------------------# 
 	# Database settings
