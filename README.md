@@ -62,6 +62,6 @@ mysql -u root -p mysql < /home/pi/Documents/home-automation/homeautomation.sql
 ```
 
 ## Start program
-Start the program with `sudo python /home/pi/Documents/home-automation/main.py` and start the API with `sudo /home/pi/Documents/home-automation/python API.py`
+Start the program with `sudo python /home/pi/Documents/home-automation/main.py` and start the API with `sudo python /home/pi/Documents/home-automation/API.py`
 
 Go to `http://your-raspberry-ip/`. Log in with username `admin` and password `admin123`.
