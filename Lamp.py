@@ -39,7 +39,7 @@ class Lamp:
 	# Change status of lamp
 	#---------------------------------------------------------------------------# 
 	def LampPower(self, nId, sName, nPowerOn, sCmd):
-	
+		
 		#Update database
 		dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 		cursorPowerOff = dbPowerOff.cursor()
