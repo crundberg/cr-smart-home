@@ -6,7 +6,7 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	Version = 'v0.1'
 	City = 'Goteborg'
-	Latitude = 57.70887	#Latitude for Goteborg
+	Latitude = 57.70887		#Latitude for Goteborg
 	Longitude = 11.97456	#Longitude for Goteborg
 
 	#---------------------------------------------------------------------------# 
@@ -32,6 +32,12 @@ class Config:
 
 	#---------------------------------------------------------------------------# 
 	# RF command settings
-	#-----------------------------------------------------------------------
+	#---------------------------------------------------------------------------#
 	RF_Command_Repeat = 3	# Number of times to repeat command
 	RF_Command_Delay = 0	# Time in seconds between the repeats
+
+	#---------------------------------------------------------------------------# 
+	# Sun settings
+	#---------------------------------------------------------------------------# 
+	Zenith = 90.83333	# Sun's zenith for sunrise/sunset
+	LocalOffset = 1		# Offset from UTC (GMT)

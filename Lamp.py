@@ -4,6 +4,7 @@ import MySQLdb
 import pi_switch
 import logging
 import sys
+from Sun import Sun
 from Config import Config
 
 logger = logging.getLogger('home-automation')
@@ -76,6 +77,10 @@ class Lamp:
 		dtDateNow = datetime.datetime.now().date()
 		nWeekdayNow = datetime.datetime.today().weekday()
 		
+		#Sun
+		sun = Sun()
+		bSunIsDown = sun.sunIsDown();
+		
 		#Init variables
 		dbId = 0
 		dbName = ''
@@ -91,7 +96,7 @@ class Lamp:
 
 		#Log heartbeat
 		if (Config.Log_Heartbeat > 0):
-                        self.nHeartbeat += 1
+			self.nHeartbeat += 1
 
 		if (self.nHeartbeat >= Config.Log_Heartbeat):
 			self.nHeartbeat = 0
@@ -143,9 +148,9 @@ class Lamp:
 					dtStop += datetime.timedelta(days=1)
 			
 				#Start object
-				if (dtNow > dtStart and dtNow < dtStop):
+				if (dtNow > dtStart and dtNow < dtStop and (dbMode == 1 or (dbMode == 2 and bSunIsDown))):
 					nPowerOn = 1
-	
+		
 					if (dbPowerOn <> 1):
 						self.LampPower(dbId, dbName, 1, dbCmdOn)
 				else:
