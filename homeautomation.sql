@@ -119,7 +119,7 @@ ALTER TABLE `ha_lamp_objects`
 -- Index för tabell `ha_lamp_schedule`
 --
 ALTER TABLE `ha_lamp_schedule`
- ADD PRIMARY KEY (`ScheduleId`);
+ ADD PRIMARY KEY (`ScheduleId`), ADD KEY `ScheduleLampId` (`ScheduleLampId`);
 
 --
 -- Index för tabell `ha_users`
@@ -157,3 +157,13 @@ MODIFY `UserId` int(11) NOT NULL AUTO_INCREMENT;
 --
 ALTER TABLE `ha_user_login`
 MODIFY `UserId` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restriktioner för dumpade tabeller
+--
+
+--
+-- Restriktioner för tabell `ha_lamp_schedule`
+--
+ALTER TABLE `ha_lamp_schedule`
+ADD CONSTRAINT `ha_lamp_schedule_ibfk_1` FOREIGN KEY (`ScheduleLampId`) REFERENCES `ha_lamp_objects` (`LampId`) ON DELETE CASCADE;

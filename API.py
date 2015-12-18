@@ -108,13 +108,27 @@ def power_lamp():
 	lamp = Lamp()
 	result = lamp.LampCmd(request.json.get('cmd', ""))
 
-	lamp = {
+	json = {
 		'id': request.json['id'],
 		'cmd': request.json.get('cmd', ""),
 		'result': result
 	}
 
-	return jsonify({'lamp': lamp})
+	return jsonify({'lamp': json})
+	
+#---------------------------------------------------------------------------# 
+# Send power off to all lamps
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/lamps/alloff', methods=['POST'])
+def poweralloff():
+	lamp = Lamp()
+	result = lamp.PowerOffAllObjects()
+
+	json = {
+		'result': result
+	}
+
+	return jsonify({'lamp': json})
 
 #---------------------------------------------------------------------------# 
 # 404 Error

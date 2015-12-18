@@ -24,7 +24,7 @@ class Lamp:
 			logger.warning('Lamp command is empty!')
 			return 'Lamp command is empty!'
 	
-		# Send command
+				# Send command
                 for x in range(0, Config.RF_Command_Repeat):
                         sender = pi_switch.RCSwitchSender()
                         sender.enableTransmit(Config.RPi_Pin_Transmitter)
@@ -171,3 +171,54 @@ class Lamp:
 			#Close database connection
 			cursor.close()
 			db.close()
+
+	#---------------------------------------------------------------------------# 
+	# Power off all lamp objects
+	#---------------------------------------------------------------------------# 
+	def PowerOffAllObjects(self):
+		logger.info("Start sending power off to all objects..")
+
+		#Update database
+		dbPowerAllOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursorPowerAllOff = dbPowerAllOff.cursor()
+
+		try:
+			cursorPowerAllOff.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 0")
+			dbPowerAllOff.commit()
+		except MySQLdb.Error, e:
+			dbPowerAllOff.rollback()
+			logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+		except:
+			logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+
+		#Loop lamps och power off
+		try:
+			#Execure SQL-Query
+			cursorPowerAllOff.execute("SELECT LampId, LampName, LampCmdOff FROM ha_lamp_objects")
+			results = cursorPowerAllOff.fetchall()
+		
+			#Loop result from database
+			for row in results:
+				#Move database row to variables
+				dbId = row[0]
+				dbName = row[1]
+				dbCmdOff = row[2]
+				
+				self.LampPower(dbId, dbName, 0, dbCmdOff)
+			
+			logger.info("Sending power off done!")
+	
+		except MySQLdb.Error, e:
+			#Log exceptions
+			try:
+				logger.Error('MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				logger.Error('MySQL Error: %s' % str(e))
+		finally:
+			#Close database connection
+			cursorPowerAllOff.close()
+			dbPowerAllOff.close()
+			
+			
+		return 'Done!'
