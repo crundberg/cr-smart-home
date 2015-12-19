@@ -100,10 +100,11 @@ INSERT INTO `ha_users` (`UserId`, `UserName`, `UserPassword`, `UserMail`, `UserS
 --
 
 DROP TABLE IF EXISTS `ha_user_login`;
-CREATE TABLE `ha_user_login` (
-`UserId` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `ha_user_login` (
+  `Id` int(11) NOT NULL,
+  `UserId` int(11) NOT NULL,
   `Date` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
 -- Index för dumpade tabeller
@@ -131,7 +132,7 @@ ALTER TABLE `ha_users`
 -- Index för tabell `ha_user_login`
 --
 ALTER TABLE `ha_user_login`
- ADD PRIMARY KEY (`UserId`);
+ ADD PRIMARY KEY (`Id`);
 
 --
 -- AUTO_INCREMENT för dumpade tabeller
@@ -156,7 +157,7 @@ MODIFY `UserId` int(11) NOT NULL AUTO_INCREMENT;
 -- AUTO_INCREMENT för tabell `ha_user_login`
 --
 ALTER TABLE `ha_user_login`
-MODIFY `UserId` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restriktioner för dumpade tabeller
