@@ -25,7 +25,7 @@ class Lamp:
 			return 'Lamp command is empty!'
 	
 				# Send command
-                for x in range(0, Config.RF_Command_Repeat):
+                for x in range(1, Config.RF_Command_Repeat):
                         sender = pi_switch.RCSwitchSender()
                         sender.enableTransmit(Config.RPi_Pin_Transmitter)
                         sender.sendDecimal(int(sCmd), 24)
@@ -204,7 +204,7 @@ class Lamp:
 				dbName = row[1]
 				dbCmdOff = row[2]
 				
-				self.LampPower(dbId, dbName, 0, dbCmdOff)
+				self.LampCmd(dbCmdOff)
 			
 			logger.info("Sending power off done!")
 	
