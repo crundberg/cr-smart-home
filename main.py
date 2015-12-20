@@ -1,6 +1,8 @@
 import time
 import logging
 import logging.handlers
+from datetime import datetime
+from Weather import Weather
 from Lamp import Lamp
 from Config import Config
 
@@ -20,14 +22,26 @@ def main():
 	#---------------------------------------------------------------------------# 
 	logger.info('Starting Home Automation %s...' % Config.Version)
 	logger.info('System is running in %s (Lat=%f, Long=%f)' % (Config.City, Config.Latitude, Config.Longitude))
+	bStartUp = True
 	
 	#---------------------------------------------------------------------------# 
 	# Run program
 	#---------------------------------------------------------------------------# 
+	weather = Weather()
 	lamp = Lamp()
 
 	while True:
+		#Update current weather on startup or every 30 minutes
+		if (datetime.now().minute == 0 or datetime.now().minute == 30 or bStartUp == True):
+			weather.UpdateCurrentWeather();
+	
+		#Loop through all lamps
 		lamp.LoopLampObjects()
+		
+		#Reset startup bool
+		bStartUp = False
+		
+		#Sleep 60s
 		time.sleep(60)
 
 if __name__ == '__main__':

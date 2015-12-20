@@ -5,7 +5,7 @@ class Config:
 	# General settings
 	#---------------------------------------------------------------------------# 
 	Version = 'v0.1'
-	City = 'Goteborg'
+	City = 'Gothenburg'
 	Latitude = 57.70887		#Latitude for Goteborg
 	Longitude = 11.97456	#Longitude for Goteborg
 
@@ -41,3 +41,8 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	Zenith = 90.83333	# Sun's zenith for sunrise/sunset
 	LocalOffset = 1		# Offset from UTC (GMT)
+	
+	#---------------------------------------------------------------------------# 
+	# Weather
+	#---------------------------------------------------------------------------# 	
+	WeatherAPIKey = "" # Get free API-key here: http://openweathermap.org/appid

@@ -107,6 +107,26 @@ CREATE TABLE IF NOT EXISTS `ha_user_login` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
 --
+-- Tabellstruktur `ha_data`
+--
+
+CREATE TABLE IF NOT EXISTS `ha_data` (
+`DataId` int(11) NOT NULL,
+  `DataName` varchar(250) NOT NULL,
+  `DataText` text NOT NULL,
+  `DataStatus` int(11) NOT NULL,
+  `DataLastUpdated` datetime NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Dumpning av Data i tabell `ha_data`
+--
+
+INSERT INTO `ha_data` (`DataId`, `DataName`, `DataText`, `DataStatus`, `DataLastUpdated`) VALUES
+(1, 'Schedule', 'OK', 0, '2015-12-20 11:45:14'),
+(2, 'Weather', '', 200, '2015-12-20 18:50:52');
+
+--
 -- Index för dumpade tabeller
 --
 
@@ -133,6 +153,12 @@ ALTER TABLE `ha_users`
 --
 ALTER TABLE `ha_user_login`
  ADD PRIMARY KEY (`Id`);
+ 
+--
+-- Index för tabell `ha_data`
+--
+ALTER TABLE `ha_data`
+ ADD PRIMARY KEY (`DataId`);
 
 --
 -- AUTO_INCREMENT för dumpade tabeller
@@ -158,6 +184,11 @@ MODIFY `UserId` int(11) NOT NULL AUTO_INCREMENT;
 --
 ALTER TABLE `ha_user_login`
 MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT för tabell `ha_data`
+--
+ALTER TABLE `ha_data`
+MODIFY `DataId` int(11) NOT NULL AUTO_INCREMENT
 
 --
 -- Restriktioner för dumpade tabeller
