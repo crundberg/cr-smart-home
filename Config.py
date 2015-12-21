@@ -45,4 +45,4 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	# Weather
 	#---------------------------------------------------------------------------# 	
-	WeatherAPIKey = "3527410387f149f08fe1ede9510ea645" # Get free API-key here: http://openweathermap.org/appid
+	WeatherAPIKey = "" # Get free API-key here: http://openweathermap.org/appid
