@@ -145,11 +145,34 @@ def poweralloff():
 	return jsonify({'lamp': json})
 
 #---------------------------------------------------------------------------# 
+# Send power off to all lamps
+#---------------------------------------------------------------------------#
+@app.route("/Authenticate")
+def Authenticate():
+	username = request.args.get('Username')
+	password = request.args.get('Password')
+	cursor = mysql.connect().cursor()
+	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND UserPassword = '" + password + "'")
+	data = cursor.fetchone()
+    
+	if data is None:
+		return "Username or Password is wrong"
+	else:
+		return "Logged in successfully"
+
+#---------------------------------------------------------------------------# 
+# Unauthorized access
+#---------------------------------------------------------------------------#	
+#@auth.error_handler
+#def unauthorized():
+#    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
+
+#---------------------------------------------------------------------------# 
 # 404 Error
 #---------------------------------------------------------------------------#
-@app.errorhandler(404)
-def not_found(error):
-	return make_response(jsonify({'error': 'Not found'}), 404)
+#@app.errorhandler(404)
+#def not_found(error):
+#	return make_response(jsonify({'error': 'Not found'}), 404)
 
 #---------------------------------------------------------------------------# 
 # Start app

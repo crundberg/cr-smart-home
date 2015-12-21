@@ -6,7 +6,7 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	Version = 'v0.1'
 	City = 'Gothenburg'
-	Latitude = 57.70887		#Latitude for Goteborg
+	Latitude = 57.70887	#Latitude for Goteborg
 	Longitude = 11.97456	#Longitude for Goteborg
 
 	#---------------------------------------------------------------------------# 
@@ -45,4 +45,4 @@ class Config:
 	#---------------------------------------------------------------------------# 
 	# Weather
 	#---------------------------------------------------------------------------# 	
-	WeatherAPIKey = "" # Get free API-key here: http://openweathermap.org/appid
+	WeatherAPIKey = "3527410387f149f08fe1ede9510ea645" # Get free API-key here: http://openweathermap.org/appid

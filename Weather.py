@@ -23,7 +23,7 @@ class Weather:
 			return
 			
 		# Get weather from OpenWeatherMap
-		url = 'http://api.openweathermap.org/data/2.5/find?q=%s&units=metric&lang=sv&appid=%s' % (self.city, self.apikey)
+		url = 'http://api.openweathermap.org/data/2.5/find?q=%s&units=metric&appid=%s' % (self.city, self.apikey)
 		response = requests.get(url)
 		
 		# If status isn't OK

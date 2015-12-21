@@ -23,18 +23,17 @@ class Lamp:
 		if (len(sCmd) < 1):
 			logger.warning('Lamp command is empty!')
 			return 'Lamp command is empty!'
-	
-				# Send command
-                for x in range(1, Config.RF_Command_Repeat):
-                        sender = pi_switch.RCSwitchSender()
-                        sender.enableTransmit(Config.RPi_Pin_Transmitter)
-                        sender.sendDecimal(int(sCmd), 24)
-                        
-                        time.sleep(Config.RF_Command_Delay)
-	
+
+		# Send command
+		for x in range(1, Config.RF_Command_Repeat):
+			sender = pi_switch.RCSwitchSender()
+			sender.enableTransmit(Config.RPi_Pin_Transmitter)
+			sender.sendDecimal(int(sCmd), 24)
+
+			time.sleep(Config.RF_Command_Delay)
+
 		# Return
 		return 'Done!'
-
 
 	#---------------------------------------------------------------------------# 
 	# Change status of lamp
@@ -186,7 +185,7 @@ class Lamp:
 		cursorPowerAllOn = dbPowerAllOn.cursor()
 
 		try:
-			cursorPowerAllOn.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 1")
+			cursorPowerAllOn.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 1 WHERE LampIncInAll = 1")
 			dbPowerAllOn.commit()
 		except MySQLdb.Error, e:
 			dbPowerAllOn.rollback()
@@ -197,7 +196,7 @@ class Lamp:
 		#Loop lamps och power on
 		try:
 			#Execure SQL-Query
-			cursorPowerAllOn.execute("SELECT LampId, LampName, LampCmdOn FROM ha_lamp_objects")
+			cursorPowerAllOn.execute("SELECT LampId, LampName, LampCmdOn FROM ha_lamp_objects WHERE LampIncInAll = 1")
 			results = cursorPowerAllOn.fetchall()
 		
 			#Loop result from database
@@ -236,7 +235,7 @@ class Lamp:
 		cursorPowerAllOff = dbPowerAllOff.cursor()
 
 		try:
-			cursorPowerAllOff.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 0")
+			cursorPowerAllOff.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 0 WHERE LampIncInAll = 1")
 			dbPowerAllOff.commit()
 		except MySQLdb.Error, e:
 			dbPowerAllOff.rollback()
@@ -247,7 +246,7 @@ class Lamp:
 		#Loop lamps och power off
 		try:
 			#Execure SQL-Query
-			cursorPowerAllOff.execute("SELECT LampId, LampName, LampCmdOff FROM ha_lamp_objects")
+			cursorPowerAllOff.execute("SELECT LampId, LampName, LampCmdOff FROM ha_lamp_objects WHERE LampIncInAll = 1")
 			results = cursorPowerAllOff.fetchall()
 		
 			#Loop result from database
