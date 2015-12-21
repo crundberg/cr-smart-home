@@ -94,6 +94,9 @@ class Lamp:
 		dbMode = 0
 		nPowerOn = 0
 
+		#Update database
+		self.SQLQuery("Update ha_data SET DataText='OK', DataStatus=200, DataLastUpdated=NOW() WHERE DataName='Schedule'");
+
 		#Log heartbeat
 		if (Config.Log_Heartbeat > 0):
 			self.nHeartbeat += 1
@@ -271,3 +274,22 @@ class Lamp:
 			dbPowerAllOff.close()
 		
 		return 'Done!'
+		
+	#---------------------------------------------------------------------------# 
+	# SQL Query
+	#---------------------------------------------------------------------------# 			
+	def SQLQuery(self, sSQL):
+			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+			cursor = db.cursor()
+		
+			try:
+				cursor.execute(sSQL)
+				db.commit()
+			except MySQLdb.Error, e:
+				db.rollback()
+				logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+			except:
+				logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+			finally:
+				cursor.close()
+				db.close()

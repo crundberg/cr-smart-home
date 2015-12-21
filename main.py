@@ -3,6 +3,7 @@ import logging
 import logging.handlers
 from datetime import datetime
 from Weather import Weather
+from Sun import Sun
 from Lamp import Lamp
 from Config import Config
 
@@ -28,12 +29,17 @@ def main():
 	# Run program
 	#---------------------------------------------------------------------------# 
 	weather = Weather()
+	sun = Sun()
 	lamp = Lamp()
 
 	while True:
-		#Update current weather on startup or every 30 minutes
+		# Update current weather on startup or every 30 minutes
 		if (datetime.now().minute == 0 or datetime.now().minute == 30 or bStartUp == True):
 			weather.UpdateCurrentWeather();
+			
+		# Update sun to database every hour
+		if (datetime.now().minute == 0 or bStartUp == True):
+			sun.UpdateDb()
 	
 		#Loop through all lamps
 		lamp.LoopLampObjects()
@@ -41,8 +47,8 @@ def main():
 		#Reset startup bool
 		bStartUp = False
 		
-		#Sleep 60s
-		time.sleep(60)
+		#Sleep one minute
+		time.sleep(60 - datetime.now().second)
 
 if __name__ == '__main__':
 	main()

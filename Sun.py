@@ -4,6 +4,7 @@
 import math
 import datetime
 import time
+import MySQLdb
 from Config import Config
 
 class Sun:
@@ -33,6 +34,19 @@ class Sun:
  		sunrise = self.sunrise(now, self.latitude, self.longitude)
  		sunset = self.sunset(now, self.latitude, self.longitude)
 		return (now > sunrise or now < sunset)
+		
+	#---------------------------------------------------------------------------# 
+	# Update to database
+	#---------------------------------------------------------------------------# 	
+	def UpdateDb(self):
+		now = datetime.datetime.now()
+ 		sunrise = self.sunrise(now, self.latitude, self.longitude)
+ 		sunset = self.sunset(now, self.latitude, self.longitude)
+ 		
+ 		data = '{"Sunrise":"%s","Sunset":"%s"}' % (sunrise, sunset) 		
+ 		sql = "INSERT INTO ha_data (DataId, DataName, DataText, DataStatus, DataLastUpdated) VALUES (3, 'Sun', '%s', 200, NOW()) ON DUPLICATE KEY UPDATE DataText = VALUES(DataText), DataStatus = VALUES(DataStatus), DataLastUpdated = VALUES(DataLastUpdated)" % data
+		
+		self.SQLQuery(sql)
 	
 	#---------------------------------------------------------------------------# 
 	# Adjust angle
@@ -178,3 +192,21 @@ class Sun:
 		#Return
 		return datetime.datetime(year, month, day, h_set, m_set)
 		
+	#---------------------------------------------------------------------------# 
+	# SQL Query
+	#---------------------------------------------------------------------------# 			
+	def SQLQuery(self, sSQL):
+			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+			cursor = db.cursor()
+		
+			try:
+				cursor.execute(sSQL)
+				db.commit()
+			except MySQLdb.Error, e:
+				db.rollback()
+				logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+			except:
+				logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+			finally:
+				cursor.close()
+				db.close()
