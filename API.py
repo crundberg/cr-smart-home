@@ -115,6 +115,20 @@ def power_lamp():
 	}
 
 	return jsonify({'lamp': json})
+
+#---------------------------------------------------------------------------# 
+# Send power on to all lamps
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/lamps/allon', methods=['POST'])
+def powerallon():
+	lamp = Lamp()
+	result = lamp.PowerOnAllObjects()
+
+	json = {
+		'result': result
+	}
+
+	return jsonify({'lamp': json})
 	
 #---------------------------------------------------------------------------# 
 # Send power off to all lamps

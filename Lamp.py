@@ -117,7 +117,7 @@ class Lamp:
 				if (dbId == row[0] and nPowerOn == 1):
 					continue
 				#Last object shouldn't be on
-				elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0 and dbPowerOn <> 0):
+				elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0 and dbPowerOn <> 0 and dbMode <> 0):
 					self.LampPower(dbId, dbName, 0, dbCmdOff)
 					
 				#Move database row to variables
@@ -157,7 +157,7 @@ class Lamp:
 					nPowerOn = 0
 				
 			#Power off last object if not started
-			if (dbId > 0 and nPowerOn == 0 and dbPowerOn <> 0):
+			if (dbId > 0 and nPowerOn == 0 and dbPowerOn <> 0 and dbMode <> 0):
 				self.LampPower(dbId, dbName, 0, dbCmdOff)
 	
 		except MySQLdb.Error, e:
@@ -171,6 +171,56 @@ class Lamp:
 			#Close database connection
 			cursor.close()
 			db.close()
+
+	#---------------------------------------------------------------------------# 
+	# Power on all lamp objects
+	#---------------------------------------------------------------------------# 
+	def PowerOnAllObjects(self):
+		logger.info("Start sending power on to all objects..")
+
+		#Update database
+		dbPowerAllOn = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursorPowerAllOn = dbPowerAllOn.cursor()
+
+		try:
+			cursorPowerAllOn.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 1")
+			dbPowerAllOn.commit()
+		except MySQLdb.Error, e:
+			dbPowerAllOn.rollback()
+			logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+		except:
+			logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+
+		#Loop lamps och power on
+		try:
+			#Execure SQL-Query
+			cursorPowerAllOn.execute("SELECT LampId, LampName, LampCmdOn FROM ha_lamp_objects")
+			results = cursorPowerAllOn.fetchall()
+		
+			#Loop result from database
+			for row in results:
+				#Move database row to variables
+				dbId = row[0]
+				dbName = row[1]
+				dbCmdOn = row[2]
+				
+				self.LampCmd(dbCmdOn)
+			
+			logger.info("Sending power on done!")
+	
+		except MySQLdb.Error, e:
+			#Log exceptions
+			try:
+				logger.Error('MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				logger.Error('MySQL Error: %s' % str(e))
+		finally:
+			#Close database connection
+			cursorPowerAllOn.close()
+			dbPowerAllOn.close()
+		
+		return 'Done!'
 
 	#---------------------------------------------------------------------------# 
 	# Power off all lamp objects
@@ -219,6 +269,5 @@ class Lamp:
 			#Close database connection
 			cursorPowerAllOff.close()
 			dbPowerAllOff.close()
-			
-			
+		
 		return 'Done!'
