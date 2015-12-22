@@ -24,17 +24,23 @@ class Weather:
 			
 		# Get weather from OpenWeatherMap
 		url = 'http://api.openweathermap.org/data/2.5/find?q=%s&units=metric&appid=%s' % (self.city, self.apikey)
-		response = requests.get(url)
 		
-		# If status isn't OK
-		if response.status_code == 200:
-			json_data = json.loads(response.text)
-			logger.info("Updating weather for %s" % json_data['list'][0]['name'])
+		try:
+			response = requests.get(url)
 		
-			#Update database
-			self.SQLQuery("UPDATE ha_data SET DataText = '%s', DataStatus = '%s', DataLastUpdated = NOW() WHERE DataName = 'Weather'" % (response.text, response.status_code))
-		else:
-			logger.error("Weather API: Status Code %s" % response.status_code)
+			# If status isn't OK
+			if response.status_code == 200:
+				json_data = json.loads(response.text)
+				logger.info("Updating weather for %s" % json_data['list'][0]['name'])
+			
+				#Update database
+				self.SQLQuery("UPDATE ha_data SET DataText = '%s', DataStatus = '%s', DataLastUpdated = NOW() WHERE DataName = 'Weather'" % (response.text, response.status_code))
+			else:
+				logger.error("Weather API: Status Code %s" % response.status_code)
+		except requests.exceptions.RequestException as e:
+			logger.error("Weather Error: %s" % e)
+		except:
+			logger.error("Unexpected weather wrror: %s" % sys.exc_info()[0])
 
 	#---------------------------------------------------------------------------# 
 	# SQL Query
