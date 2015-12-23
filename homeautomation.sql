@@ -43,8 +43,7 @@ DELIMITER ;
 -- Tabellstruktur `ha_lamp_objects`
 --
 
-DROP TABLE IF EXISTS `ha_lamp_objects`;
-CREATE TABLE `ha_lamp_objects` (
+CREATE TABLE IF NOT EXISTS `ha_lamp_objects` (
 `LampId` int(11) NOT NULL,
   `LampName` varchar(255) NOT NULL,
   `LampIO` varchar(255) NOT NULL,
@@ -52,7 +51,8 @@ CREATE TABLE `ha_lamp_objects` (
   `LampPowerOn` tinyint(2) NOT NULL,
   `LampPowerOnMan` tinyint(2) NOT NULL,
   `LampCmdOn` varchar(255) NOT NULL,
-  `LampCmdOff` varchar(255) NOT NULL
+  `LampCmdOff` varchar(255) NOT NULL,
+  `LampIncInAll` tinyint(2) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -61,7 +61,6 @@ CREATE TABLE `ha_lamp_objects` (
 -- Tabellstruktur `ha_lamp_schedule`
 --
 
-DROP TABLE IF EXISTS `ha_lamp_schedule`;
 CREATE TABLE `ha_lamp_schedule` (
 `ScheduleId` int(11) NOT NULL,
   `ScheduleLampId` int(11) NOT NULL,
@@ -77,7 +76,6 @@ CREATE TABLE `ha_lamp_schedule` (
 -- Tabellstruktur `ha_users`
 --
 
-DROP TABLE IF EXISTS `ha_users`;
 CREATE TABLE `ha_users` (
 `UserId` int(11) NOT NULL,
   `UserName` varchar(30) NOT NULL,
@@ -99,7 +97,6 @@ INSERT INTO `ha_users` (`UserId`, `UserName`, `UserPassword`, `UserMail`, `UserS
 -- Tabellstruktur `ha_user_login`
 --
 
-DROP TABLE IF EXISTS `ha_user_login`;
 CREATE TABLE IF NOT EXISTS `ha_user_login` (
   `Id` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
@@ -123,8 +120,9 @@ CREATE TABLE IF NOT EXISTS `ha_data` (
 --
 
 INSERT INTO `ha_data` (`DataId`, `DataName`, `DataText`, `DataStatus`, `DataLastUpdated`) VALUES
-(1, 'Schedule', 'OK', 0, '2015-12-20 11:45:14'),
-(2, 'Weather', '', 200, '2015-12-20 18:50:52');
+(1, 'Schedule', 'OK', 0, '2000-01-01 00:00:00'),
+(2, 'Weather', '', 200, '2000-01-01 00:00:00'),
+(3, 'Sun', '', 0, '2000-01-01 00:00:00');
 
 --
 -- Index för dumpade tabeller
