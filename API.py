@@ -2,15 +2,18 @@ import MySQLdb
 import collections
 import sys
 from flask import Flask, jsonify, abort, make_response, request
+from flask.ext.httpauth import HTTPBasicAuth
 from Lamp import Lamp
 from Config import Config
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
 
 #---------------------------------------------------------------------------# 
 # Hello World
 #---------------------------------------------------------------------------#
 @app.route("/")
+@auth.login_required
 def hello():
 	return "Hello World!"
 
@@ -18,6 +21,7 @@ def hello():
 # Get all lamps
 #---------------------------------------------------------------------------#
 @app.route("/ha/api/v1.0/lamps", methods=['GET'])
+@auth.login_required
 def get_lamps():
 	lamps = []
 
@@ -61,6 +65,7 @@ def get_lamps():
 # Get one lamp
 #---------------------------------------------------------------------------#
 @app.route('/ha/api/v1.0/lamps/<int:lamp_id>', methods=['GET'])
+@auth.login_required
 def get_lamp(lamp_id):
 	#Connect to MySQL
 	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
@@ -101,6 +106,7 @@ def get_lamp(lamp_id):
 # Send RF command to lamp
 #---------------------------------------------------------------------------#
 @app.route('/ha/api/v1.0/lamps', methods=['POST'])
+@auth.login_required
 def power_lamp():
 	if not request.json or not 'id' in request.json:
 		abort(400)
@@ -120,6 +126,7 @@ def power_lamp():
 # Send power on to all lamps
 #---------------------------------------------------------------------------#
 @app.route('/ha/api/v1.0/lamps/allon', methods=['POST'])
+@auth.login_required
 def powerallon():
 	lamp = Lamp()
 	result = lamp.PowerOnAllObjects()
@@ -134,6 +141,7 @@ def powerallon():
 # Send power off to all lamps
 #---------------------------------------------------------------------------#
 @app.route('/ha/api/v1.0/lamps/alloff', methods=['POST'])
+@auth.login_required
 def poweralloff():
 	lamp = Lamp()
 	result = lamp.PowerOffAllObjects()
@@ -145,34 +153,29 @@ def poweralloff():
 	return jsonify({'lamp': json})
 
 #---------------------------------------------------------------------------# 
-# Send power off to all lamps
+# Authenticate
 #---------------------------------------------------------------------------#
-@app.route("/Authenticate")
-def Authenticate():
-	username = request.args.get('Username')
-	password = request.args.get('Password')
-	cursor = mysql.connect().cursor()
-	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND UserPassword = '" + password + "'")
+@auth.verify_password
+def verify_password(username, password):
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+	
+	pwd = password.split(";;;")
+	
+	cursor = db.cursor()
+	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND SHA2(CONCAT(UserPassword, '" + pwd[1] + "'), 512) = '" + pwd[0] + "'")
 	data = cursor.fetchone()
     
 	if data is None:
-		return "Username or Password is wrong"
+		return False
 	else:
-		return "Logged in successfully"
-
-#---------------------------------------------------------------------------# 
-# Unauthorized access
-#---------------------------------------------------------------------------#	
-#@auth.error_handler
-#def unauthorized():
-#    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
+		return True
 
 #---------------------------------------------------------------------------# 
 # 404 Error
 #---------------------------------------------------------------------------#
-#@app.errorhandler(404)
-#def not_found(error):
-#	return make_response(jsonify({'error': 'Not found'}), 404)
+@app.errorhandler(404)
+def not_found(error):
+	return make_response(jsonify({'error': 'Not found'}), 404)
 
 #---------------------------------------------------------------------------# 
 # Start app

@@ -100,9 +100,9 @@ class Lamp:
 		if (Config.Log_Heartbeat > 0):
 			self.nHeartbeat += 1
 
-		if (self.nHeartbeat >= Config.Log_Heartbeat):
-			self.nHeartbeat = 0
-			logger.info('Heartbeat')
+			if (self.nHeartbeat >= Config.Log_Heartbeat):
+				self.nHeartbeat = 0
+				logger.info('Heartbeat')
 	
 		#Connect to MySQL
 		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)

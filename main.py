@@ -9,9 +9,9 @@ from Config import Config
 
 def main():
 	#---------------------------------------------------------------------------# 
-	# Logging - Rotate log file at midnight and keep for 30 days
+	# Logging - Rotate log file at midnight and keep for 7 days
 	#---------------------------------------------------------------------------#
-	handler = logging.handlers.TimedRotatingFileHandler(Config.Log_Filename, when="midnight", interval=1, backupCount=30)
+	handler = logging.handlers.TimedRotatingFileHandler(Config.Log_Filename, when="midnight", interval=1, backupCount=7)
 	handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
 	logger = logging.getLogger('home-automation')
