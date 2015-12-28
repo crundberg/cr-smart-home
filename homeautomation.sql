@@ -29,7 +29,7 @@ DROP PROCEDURE IF EXISTS `GetLampSchedulesSimple`;
 DELIMITER $$
 CREATE PROCEDURE `GetLampSchedulesSimple` ()
 BEGIN
-SELECT t3.LampId, t3.LampName, t3.LampIO, t3.LampPowerOn, t3.LampCmdOn, t3.LampCmdOff, t1.ScheduleWeekday, t1.ScheduleTimeOn, t1.ScheduleTimeOff, t1.ScheduleMode
+SELECT t3.LampId, t3.LampName, t3.LampPowerOn, t3.LampCmdOn, t3.LampCmdOff, t1.ScheduleWeekday, t1.ScheduleTimeOn, t1.ScheduleTimeOff, t1.ScheduleMode
 FROM ha_lamp_objects t3
 LEFT JOIN ha_lamp_schedule t1 on t1.ScheduleLampId = t3.LampId
 WHERE t1.ScheduleWeekday = WEEKDAY(NOW()) OR t1.ScheduleWeekday = WEEKDAY(DATE_SUB(NOW(), INTERVAL 1 DAY))
@@ -46,13 +46,13 @@ DELIMITER ;
 CREATE TABLE IF NOT EXISTS `ha_lamp_objects` (
 `LampId` int(11) NOT NULL,
   `LampName` varchar(255) NOT NULL,
-  `LampIO` varchar(255) NOT NULL,
   `LampType` varchar(255) NOT NULL,
   `LampPowerOn` tinyint(2) NOT NULL,
   `LampPowerOnMan` tinyint(2) NOT NULL,
   `LampCmdOn` varchar(255) NOT NULL,
   `LampCmdOff` varchar(255) NOT NULL,
-  `LampIncInAll` tinyint(2) NOT NULL DEFAULT '1'
+  `LampIncInAll` tinyint(2) NOT NULL DEFAULT '1',
+  `LampOrder` INT(11) NOT NULL DEFAULT '100'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

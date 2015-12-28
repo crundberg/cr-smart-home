@@ -31,6 +31,7 @@ sudo apt-get install apache2
 sudo apt-get install php5 php5-curl php5-mysql libapache2-mod-php5
 sudo apt-get install python-dev libboost-python-dev python-pip
 sudo pip install Flask
+sudo pip install flask-httpauth
 
 cd /home/pi/Documents
 git clone git://git.drogon.net/wiringPi
