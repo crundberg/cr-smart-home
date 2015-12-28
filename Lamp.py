@@ -11,25 +11,21 @@ logger = logging.getLogger('home-automation')
 
 class Lamp:
 	#---------------------------------------------------------------------------# 
-	# Constructor
-	#---------------------------------------------------------------------------# 
-	def __init__(self):
-		self.nHeartbeat = 0
-
-	#---------------------------------------------------------------------------# 
 	# Send RF command
 	#---------------------------------------------------------------------------# 
 	def LampCmd(self, sCmd):
+		# Warn if lamp command is empty
 		if (len(sCmd) < 1):
 			logger.warning('Lamp command is empty!')
 			return 'Lamp command is empty!'
 
+		# Prepare for send
+		sender = pi_switch.RCSwitchSender()
+		sender.enableTransmit(Config.RPi_Pin_Transmitter)
+		
 		# Send command
 		for x in range(1, Config.RF_Command_Repeat):
-			sender = pi_switch.RCSwitchSender()
-			sender.enableTransmit(Config.RPi_Pin_Transmitter)
 			sender.sendDecimal(int(sCmd), 24)
-
 			time.sleep(Config.RF_Command_Delay)
 
 		# Return
@@ -83,7 +79,6 @@ class Lamp:
 		#Init variables
 		dbId = 0
 		dbName = ''
-		dbIO = ''
 		dbPowerOn = 0
 		dbCmdOn = ''
 		dbCmdOff = ''
@@ -95,14 +90,6 @@ class Lamp:
 
 		#Update database
 		self.SQLQuery("Update ha_data SET DataText='OK', DataStatus=200, DataLastUpdated=NOW() WHERE DataName='Schedule'");
-
-		#Log heartbeat
-		if (Config.Log_Heartbeat > 0):
-			self.nHeartbeat += 1
-
-			if (self.nHeartbeat >= Config.Log_Heartbeat):
-				self.nHeartbeat = 0
-				logger.info('Heartbeat')
 	
 		#Connect to MySQL
 		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
@@ -125,14 +112,13 @@ class Lamp:
 				#Move database row to variables
 				dbId = row[0]
 				dbName = row[1]
-				dbIO = row[2]
-				dbPowerOn = row[3]
-				dbCmdOn = row[4]
-				dbCmdOff = row[5]
-				dbWeekday = row[6]
-				dbOn = row[7]
-				dbOff = row[8]
-				dbMode = row[9]
+				dbPowerOn = row[2]
+				dbCmdOn = row[3]
+				dbCmdOff = row[4]
+				dbWeekday = row[5]
+				dbOn = row[6]
+				dbOff = row[7]
+				dbMode = row[8]
 				
 				#Calculate DateTime for start and stop
 				if (nWeekdayNow == dbWeekday):
