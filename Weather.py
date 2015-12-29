@@ -4,7 +4,9 @@ import logging
 import MySQLdb
 import sys
 from Config import Config
+from Log import Log
 
+log = Log()
 logger = logging.getLogger('home-automation')
 
 class Weather:
@@ -31,17 +33,14 @@ class Weather:
 		
 			# If status isn't OK
 			if response.status_code == 200:
-				json_data = json.loads(response.text)
-				logger.info("Updating weather for %s" % json_data['list'][0]['name'])
-			
 				#Update database
 				self.SQLQuery("UPDATE ha_data SET DataText = '%s', DataStatus = '%s', DataLastUpdated = NOW() WHERE DataName = 'Weather'" % (response.text, response.status_code))
 			else:
-				logger.error("Weather API: Status Code %s" % response.status_code)
+				log.error('Server', 'Weather API: Status Code %s' % response.status_code)
 		except requests.exceptions.RequestException as e:
-			logger.error("Weather Error: %s" % e)
+			log.error('Server', 'Weather Error: %s' % e)
 		except:
-			logger.error("Unexpected weather wrror: %s" % sys.exc_info()[0])
+			log.error('Server', 'Unexpected weather error: %s' % sys.exc_info()[0])
 
 	#---------------------------------------------------------------------------# 
 	# SQL Query
@@ -55,9 +54,9 @@ class Weather:
 				db.commit()
 			except MySQLdb.Error, e:
 				db.rollback()
-				logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 			except:
-				logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+				log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 			finally:
 				cursor.close()
 				db.close()

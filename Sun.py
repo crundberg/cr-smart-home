@@ -6,6 +6,9 @@ import datetime
 import time
 import MySQLdb
 from Config import Config
+from Log import Log
+
+log = Log()
 
 class Sun:
 	#---------------------------------------------------------------------------# 
@@ -204,9 +207,9 @@ class Sun:
 				db.commit()
 			except MySQLdb.Error, e:
 				db.rollback()
-				logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 			except:
-				logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+				log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 			finally:
 				cursor.close()
 				db.close()

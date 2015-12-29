@@ -6,11 +6,15 @@ from Weather import Weather
 from Sun import Sun
 from Lamp import Lamp
 from Config import Config
+from Log import Log
+from Upgrade import Upgrade
 
 def main():
 	#---------------------------------------------------------------------------# 
 	# Logging - Rotate log file at midnight and keep for 7 days
 	#---------------------------------------------------------------------------#
+	log = Log()
+	
 	handler = logging.handlers.TimedRotatingFileHandler(Config.Log_Filename, when="midnight", interval=1, backupCount=7)
 	handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -20,10 +24,16 @@ def main():
 	
 	#---------------------------------------------------------------------------# 
 	# Startup
-	#---------------------------------------------------------------------------# 
-	logger.info('Starting Home Automation %s...' % Config.Version)
-	logger.info('System is running in %s (Lat=%f, Long=%f)' % (Config.City, Config.Latitude, Config.Longitude))
+	#---------------------------------------------------------------------------#
+	log.info('Server', 'Starting Home Automation %s...' % Config.Version)
+	log.info('Server', 'System is running in %s (Lat=%f, Long=%f)' % (Config.City, Config.Latitude, Config.Longitude))
 	bStartUp = True
+	
+	#---------------------------------------------------------------------------# 
+	# Upgrade
+	#---------------------------------------------------------------------------#
+	upgrade = Upgrade()
+	upgrade.Upgrade()
 	
 	#---------------------------------------------------------------------------# 
 	# Run program

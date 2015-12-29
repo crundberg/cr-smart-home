@@ -40,12 +40,11 @@ def get_lamps():
 			d = collections.OrderedDict()
 			d['Id'] = row[0]
 			d['Name'] = row[1]
-			d['IO'] = row[2]
-			d['Type'] = row[3]
-			d['PowerOn'] = row[4]
-			d['PowerOnMan'] = row[5]
-			d['CmdOn'] = row[6]
-			d['CmdOff'] = row[7]
+			d['Type'] = row[2]
+			d['PowerOn'] = row[3]
+			d['PowerOnMan'] = row[4]
+			d['CmdOn'] = row[5]
+			d['CmdOff'] = row[6]
 			lamps.append(d)
 	except MySQLdb.Error, e:
 		#Log exceptions
@@ -82,12 +81,11 @@ def get_lamp(lamp_id):
 			d = collections.OrderedDict()
 			d['Id'] = row[0]
 			d['Name'] = row[1]
-			d['IO'] = row[2]
-			d['Type'] = row[3]
-			d['PowerOn'] = row[4]
-			d['PowerOnMan'] = row[5]
-			d['CmdOn'] = row[6]
-			d['CmdOff'] = row[7]
+			d['Type'] = row[2]
+			d['PowerOn'] = row[3]
+			d['PowerOnMan'] = row[4]
+			d['CmdOn'] = row[5]
+			d['CmdOff'] = row[6]
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
