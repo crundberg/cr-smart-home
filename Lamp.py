@@ -13,6 +13,7 @@ class Lamp:
 	#---------------------------------------------------------------------------# 
 	def __init__(self):
 		self.log = Log()
+		self.sun = Sun()
 	
 	#---------------------------------------------------------------------------# 
 	# Send RF command
@@ -73,8 +74,7 @@ class Lamp:
 		nWeekdayNow = datetime.datetime.today().weekday()
 		
 		#Sun
-		sun = Sun()
-		bSunIsDown = sun.sunIsDown();
+		bSunIsDown = self.sun.sunIsDown();
 		
 		#Init variables
 		dbId = 0
