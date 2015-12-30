@@ -16,6 +16,8 @@ DROP PROCEDURE `GetLampSchedulesSimple`; CREATE DEFINER=`root`@`localhost` PROCE
 ## 2015-12-29
 Updated database for logging and settings
 ```
+USE homeautomation;
+
 CREATE TABLE IF NOT EXISTS `ha_log` (
 `LogId` int(11) NOT NULL,
   `LogDate` datetime NOT NULL,
