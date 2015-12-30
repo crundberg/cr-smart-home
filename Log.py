@@ -28,17 +28,17 @@ class Log:
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
 	def SQLQuery(self, sSQL):
-			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-			cursor = db.cursor()
-		
-			try:
-				cursor.execute(sSQL)
-				db.commit()
-			except MySQLdb.Error, e:
-				db.rollback()
-				logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
-			except:
-				logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
-			finally:
-				cursor.close()
-				db.close()
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+	
+		try:
+			cursor.execute(sSQL)
+			db.commit()
+		except MySQLdb.Error, e:
+			db.rollback()
+			logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+		except:
+			logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+		finally:
+			cursor.close()
+			db.close()

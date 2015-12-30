@@ -11,8 +11,9 @@ class Weather:
 	#---------------------------------------------------------------------------# 
 	def __init__(self):
 		self.log = Log()
-		self.apikey = Config.WeatherAPIKey
-		self.city = Config.City
+		self.apikey = ''
+		self.city = ''
+		self.GetSettings()
 
 	#---------------------------------------------------------------------------# 
 	# Get current weather
@@ -38,22 +39,55 @@ class Weather:
 			self.log.error('Server', 'Weather Error: %s' % e)
 		except:
 			self.log.error('Server', 'Unexpected weather error: %s' % sys.exc_info()[0])
+			
+	#---------------------------------------------------------------------------# 
+	# Get settings
+	#---------------------------------------------------------------------------# 
+	def GetSettings(self):
+		#Connect to MySQL
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+	
+		try:
+			#Execure SQL-Query
+			cursor.execute("SELECT SettingName, SettingValue FROM ha_settings WHERE SettingName='City' OR SettingName='WeatherAPIKey'")
+			results = cursor.fetchall()
+		
+			#Loop result from database
+			for row in results:					
+				#Move database row to variables
+				if (row[0] == 'City'):
+					self.city = row[1]
+				elif (row[0] == 'WeatherAPIKey'):
+					self.apikey = row[1]
+	
+		except MySQLdb.Error, e:
+			#Log exceptions
+			try:
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
+		finally:
+			#Close database connection
+			cursor.close()
+			db.close()
 
 	#---------------------------------------------------------------------------# 
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
 	def SQLQuery(self, sSQL):
-			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-			cursor = db.cursor()
-		
-			try:
-				cursor.execute(sSQL)
-				db.commit()
-			except MySQLdb.Error, e:
-				db.rollback()
-				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
-			except:
-				self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
-			finally:
-				cursor.close()
-				db.close()
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+	
+		try:
+			cursor.execute(sSQL)
+			db.commit()
+		except MySQLdb.Error, e:
+			db.rollback()
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+		except:
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		finally:
+			cursor.close()
+			db.close()

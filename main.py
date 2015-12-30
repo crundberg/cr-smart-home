@@ -25,8 +25,12 @@ def main():
 	#---------------------------------------------------------------------------# 
 	# Startup
 	#---------------------------------------------------------------------------#
+	weather = Weather()
+	sun = Sun()
+	lamp = Lamp()
+	
 	log.info('Server', 'Starting Home Automation %s...' % Config.Version)
-	log.info('Server', 'System is running in %s (Lat=%f, Long=%f)' % (Config.City, Config.Latitude, Config.Longitude))
+	log.info('Server', 'System is running in %s (Lat=%f, Long=%f)' % (weather.city, sun.latitude, sun.longitude))
 	bStartUp = True
 	
 	#---------------------------------------------------------------------------# 
@@ -38,10 +42,6 @@ def main():
 	#---------------------------------------------------------------------------# 
 	# Run program
 	#---------------------------------------------------------------------------# 
-	weather = Weather()
-	sun = Sun()
-	lamp = Lamp()
-
 	while True:
 		# Update current weather on startup or every 30 minutes
 		if (datetime.now().minute == 0 or datetime.now().minute == 30 or bStartUp == True):

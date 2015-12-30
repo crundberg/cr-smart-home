@@ -14,10 +14,21 @@ class Sun:
 	#---------------------------------------------------------------------------# 
 	def __init__(self):
 		self.log = Log()
-		self.zenith = Config.Zenith
-		self.localOffset = Config.LocalOffset
-		self.latitude = Config.Latitude
-		self.longitude = Config.Longitude
+		self.zenith = 0
+		self.localOffset = 0
+		self.latitude = 0
+		self.longitude = 0
+		self.GetSettings()
+		
+		if self.latitude < -90 or self.latitude > 90:
+			self.log.error('Server', 'Invalid latitude value')
+		if self.longitude < -180 or self.longitude > 180:
+			self.log.error('Server', 'Invalid longitude value')
+		if self.localOffset < -12 or self.localOffset > 14:
+			self.log.error('Server', 'Invalid local time offset value')
+		if self.zenith == 0:
+			self.log.error('Server', 'Invalid zenith value')
+        
 
 	#---------------------------------------------------------------------------# 
 	# Sun is down
@@ -195,20 +206,57 @@ class Sun:
 		return datetime.datetime(year, month, day, h_set, m_set)
 		
 	#---------------------------------------------------------------------------# 
+	# Get settings
+	#---------------------------------------------------------------------------# 
+	def GetSettings(self):
+		#Connect to MySQL
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+	
+		try:
+			#Execure SQL-Query
+			cursor.execute("SELECT SettingName, SettingValue FROM ha_settings WHERE SettingName='Latitude' OR SettingName='Longitude' OR SettingName='Zenith' OR SettingName='LocalTimeOffset'")
+			results = cursor.fetchall()
+		
+			#Loop result from database
+			for row in results:					
+				#Move database row to variables
+				if (row[0] == 'Latitude'):
+					self.latitude = float(row[1])
+				elif (row[0] == 'Longitude'):
+					self.longitude = float(row[1])
+				elif (row[0] == 'Zenith'):
+					self.zenith = float(row[1])
+				elif (row[0] == 'LocalTimeOffset'):
+					self.localOffset = int(row[1])
+	
+		except MySQLdb.Error, e:
+			#Log exceptions
+			try:
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
+		finally:
+			#Close database connection
+			cursor.close()
+			db.close()
+		
+	#---------------------------------------------------------------------------# 
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
 	def SQLQuery(self, sSQL):
-			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-			cursor = db.cursor()
-		
-			try:
-				cursor.execute(sSQL)
-				db.commit()
-			except MySQLdb.Error, e:
-				db.rollback()
-				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
-			except:
-				self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
-			finally:
-				cursor.close()
-				db.close()
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+	
+		try:
+			cursor.execute(sSQL)
+			db.commit()
+		except MySQLdb.Error, e:
+			db.rollback()
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+		except:
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		finally:
+			cursor.close()
+			db.close()
