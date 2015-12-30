@@ -69,12 +69,12 @@ class Upgrade:
 			# Upgrade to v0.1.2
 			if (cmp(self.VersionToInt("v0.1.2"), self.VersionToInt(dbVersion)) > 0):
 				self.log.info("Server", "Start upgrading to v0.1.2")				
-				self.SQLQuery("INSERT INTO `homeautomation`.`ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES (NULL, 'City', 'Gothenburg'), (NULL, 'Latitude', '57.70887'), (NULL, 'Longitude', '11.97456'), (NULL, 'Zenith', '90.83333'), (NULL, 'LocalTimeOffset', '1'), (NULL, 'WeatherAPIKey', '');")
+				self.SQLQuery("INSERT INTO ha_settings (SettingId, SettingName, SettingValue) VALUES (NULL, 'City', 'Gothenburg'), (NULL, 'Latitude', '57.70887'), (NULL, 'Longitude', '11.97456'), (NULL, 'Zenith', '90.83333'), (NULL, 'LocalTimeOffset', '1'), (NULL, 'WeatherAPIKey', '')")
 			
 			# Upgrade finished
 			if (self.error == 0):
 				self.SQLQuery("UPDATE ha_settings SET SettingValue='%s' WHERE SettingName='Version'" % self.Version)
-				self.log.info("Server", "Upgrading finished without errors!")
+				self.log.info("Server", "Upgrading finished successfully!")
 			else:
 				self.log.error("Server", "Upgrading finished with errors!")			
 	
