@@ -8,13 +8,12 @@ import MySQLdb
 from Config import Config
 from Log import Log
 
-log = Log()
-
 class Sun:
 	#---------------------------------------------------------------------------# 
 	# Constructor
 	#---------------------------------------------------------------------------# 
 	def __init__(self):
+		self.log = Log()
 		self.zenith = Config.Zenith
 		self.localOffset = Config.LocalOffset
 		self.latitude = Config.Latitude
@@ -207,9 +206,9 @@ class Sun:
 				db.commit()
 			except MySQLdb.Error, e:
 				db.rollback()
-				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 			except:
-				log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+				self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 			finally:
 				cursor.close()
 				db.close()

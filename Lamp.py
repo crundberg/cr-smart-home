@@ -2,33 +2,31 @@ import datetime
 import time
 import MySQLdb
 import pi_switch
-import logging
 import sys
 from Sun import Sun
 from Config import Config
 from Log import Log
 
-log = Log()
-logger = logging.getLogger('home-automation')
-
 class Lamp:
+	#---------------------------------------------------------------------------# 
+	# Constructor
+	#---------------------------------------------------------------------------# 
+	def __init__(self):
+		self.log = Log()
+	
 	#---------------------------------------------------------------------------# 
 	# Send RF command
 	#---------------------------------------------------------------------------# 
 	def LampCmd(self, sCmd):
 		# Warn if lamp command is empty
 		if (len(sCmd) < 1):
-			log.warning('Server', 'Lamp command is empty!')
+			self.log.warning('Server', 'Lamp command is empty!')
 			return 'Lamp command is empty!'
 
-		# Prepare for send
+		# Send command
 		sender = pi_switch.RCSwitchSender()
 		sender.enableTransmit(Config.RPi_Pin_Transmitter)
-		
-		# Send command
-		for x in range(1, Config.RF_Command_Repeat):
-			sender.sendDecimal(int(sCmd), 24)
-			time.sleep(Config.RF_Command_Delay)
+		sender.sendDecimal(int(sCmd), 24)
 
 		# Return
 		return 'Done!'
@@ -49,17 +47,17 @@ class Lamp:
 			dbPowerOff.commit()
 		except MySQLdb.Error, e:
 			dbPowerOff.rollback()
-			log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 		except:
-			log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 		finally:
 			dbPowerOff.close()
 	
 		#Log
 		if (nPowerOn == 1):
-			log.info('Server', 'Sending power on to %s (Cmd: %s)' % (sName, sCmd))
+			self.log.info('Server', 'Sending power on to %s (Cmd: %s)' % (sName, sCmd))
 		else:
-			log.info('Server', 'Sending power off to %s (Cmd: %s)' % (sName, sCmd))
+			self.log.info('Server', 'Sending power off to %s (Cmd: %s)' % (sName, sCmd))
 	
 		#Send command to Nexa Power Switch
 		self.LampCmd(sCmd)
@@ -153,10 +151,10 @@ class Lamp:
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
-				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
-				log.error('Server', 'MySQL Error: %s' % str(e))
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
 		finally:
 			#Close database connection
 			cursor.close()
@@ -166,7 +164,7 @@ class Lamp:
 	# Power on all lamp objects
 	#---------------------------------------------------------------------------# 
 	def PowerOnAllObjects(self):
-		log.info('Server', 'Start sending power on to all objects..')
+		self.log.info('Server', 'Sending power on to all objects..')
 
 		#Update database
 		dbPowerAllOn = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
@@ -177,9 +175,9 @@ class Lamp:
 			dbPowerAllOn.commit()
 		except MySQLdb.Error, e:
 			dbPowerAllOn.rollback()
-			log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 		except:
-			log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 
 		#Loop lamps och power on
 		try:
@@ -195,16 +193,14 @@ class Lamp:
 				dbCmdOn = row[2]
 				
 				self.LampCmd(dbCmdOn)
-			
-			log.info('Server', 'Sending power on done!')
 	
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
-				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
-				log.error('Server', 'MySQL Error: %s' % str(e))
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
 		finally:
 			#Close database connection
 			cursorPowerAllOn.close()
@@ -216,7 +212,7 @@ class Lamp:
 	# Power off all lamp objects
 	#---------------------------------------------------------------------------# 
 	def PowerOffAllObjects(self):
-		log.info('Server', 'Start sending power off to all objects..')
+		self.log.info('Server', 'Sending power off to all objects..')
 
 		#Update database
 		dbPowerAllOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
@@ -227,9 +223,9 @@ class Lamp:
 			dbPowerAllOff.commit()
 		except MySQLdb.Error, e:
 			dbPowerAllOff.rollback()
-			log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 		except:
-			log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 
 		#Loop lamps och power off
 		try:
@@ -245,16 +241,14 @@ class Lamp:
 				dbCmdOff = row[2]
 				
 				self.LampCmd(dbCmdOff)
-			
-			log.info('Server', 'Sending power off done!')
 	
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
-				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
-				log.error('Server', 'MySQL Error: %s' % str(e))
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
 		finally:
 			#Close database connection
 			cursorPowerAllOff.close()
@@ -274,9 +268,9 @@ class Lamp:
 				db.commit()
 			except MySQLdb.Error, e:
 				db.rollback()
-				log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 			except:
-				log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+				self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
 			finally:
 				cursor.close()
 				db.close()
