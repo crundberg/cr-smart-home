@@ -22,6 +22,14 @@ def main():
 	logger.addHandler(handler)
 	logger.setLevel(Config.Log_Level)
 	
+	log.info('Server', 'Starting Home Automation %s...' % Config.Version)
+	
+	#---------------------------------------------------------------------------# 
+	# Upgrade
+	#---------------------------------------------------------------------------#	
+	upgrade = Upgrade()
+	upgrade.Upgrade()
+	
 	#---------------------------------------------------------------------------# 
 	# Startup
 	#---------------------------------------------------------------------------#
@@ -29,15 +37,8 @@ def main():
 	sun = Sun()
 	lamp = Lamp()
 	
-	log.info('Server', 'Starting Home Automation %s...' % Config.Version)
 	log.info('Server', 'System is running in %s (Lat=%f, Long=%f)' % (weather.city, sun.latitude, sun.longitude))
 	bStartUp = True
-	
-	#---------------------------------------------------------------------------# 
-	# Upgrade
-	#---------------------------------------------------------------------------#
-	upgrade = Upgrade()
-	upgrade.Upgrade()
 	
 	#---------------------------------------------------------------------------# 
 	# Run program

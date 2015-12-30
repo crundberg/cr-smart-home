@@ -61,9 +61,7 @@ class Upgrade:
 		dbVersion = self.GetCurrentVersion()
 		
 		# Program is up to date
-		if (cmp(self.VersionToInt(self.Version), self.VersionToInt(dbVersion)) == 0):
-			self.log.info("Server", "The program is up to date!")
-		else:
+		if (cmp(self.VersionToInt(self.Version), self.VersionToInt(dbVersion)) <> 0):
 			# Upgrade to v0.1.1
 			if (cmp(self.VersionToInt("v0.1.1"), self.VersionToInt(dbVersion)) > 0):
 				self.log.info("Server", "Start upgrading to v0.1.1")

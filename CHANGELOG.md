@@ -41,3 +41,6 @@ ALTER TABLE `ha_settings`
  
 MODIFY `SettingId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 ```
+
+## 2015-12-30
+Moved some settings from config-file to database.
