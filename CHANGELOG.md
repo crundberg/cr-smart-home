@@ -41,7 +41,7 @@ ALTER TABLE `ha_log`
 ALTER TABLE `ha_settings`
  ADD PRIMARY KEY (`SettingId`);
  
-MODIFY `SettingId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+ALTER TABLE `ha_settings` CHANGE `SettingId` `SettingId` INT( 11 ) NOT NULL AUTO_INCREMENT ;
 ```
 
 ## 2015-12-30

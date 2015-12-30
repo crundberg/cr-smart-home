@@ -43,7 +43,7 @@ DELIMITER ;
 -- Tabellstruktur `ha_data`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_data` (
+CREATE TABLE `ha_data` (
 `DataId` int(11) NOT NULL,
   `DataName` varchar(250) NOT NULL,
   `DataText` text NOT NULL,
@@ -56,9 +56,9 @@ CREATE TABLE IF NOT EXISTS `ha_data` (
 --
 
 INSERT INTO `ha_data` (`DataId`, `DataName`, `DataText`, `DataStatus`, `DataLastUpdated`) VALUES
-(1, 'Schedule', 'OK', 0, '2000-01-01 00:00:00'),
+(1, 'Schedule', '', 200, '2000-01-01 00:00:00'),
 (2, 'Weather', '', 200, '2000-01-01 00:00:00'),
-(3, 'Sun', '', 0, '2000-01-01 00:00:00');
+(3, 'Sun', '', 200, '2000-01-01 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -66,7 +66,7 @@ INSERT INTO `ha_data` (`DataId`, `DataName`, `DataText`, `DataStatus`, `DataLast
 -- Tabellstruktur `ha_lamp_objects`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_lamp_objects` (
+CREATE TABLE `ha_lamp_objects` (
 `LampId` int(11) NOT NULL,
   `LampName` varchar(255) NOT NULL,
   `LampType` varchar(255) NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `ha_lamp_objects` (
   `LampCmdOff` varchar(255) NOT NULL,
   `LampIncInAll` tinyint(2) NOT NULL DEFAULT '1',
   `LampOrder` int(11) NOT NULL DEFAULT '100'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -84,14 +84,14 @@ CREATE TABLE IF NOT EXISTS `ha_lamp_objects` (
 -- Tabellstruktur `ha_lamp_schedule`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_lamp_schedule` (
+CREATE TABLE `ha_lamp_schedule` (
 `ScheduleId` int(11) NOT NULL,
   `ScheduleLampId` int(11) NOT NULL,
   `ScheduleWeekday` int(11) NOT NULL,
   `ScheduleTimeOn` time NOT NULL,
   `ScheduleTimeOff` time NOT NULL,
   `ScheduleMode` int(11) NOT NULL DEFAULT '0' COMMENT '0=Inactive, 1=On, 2=On if sun is down'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -99,13 +99,13 @@ CREATE TABLE IF NOT EXISTS `ha_lamp_schedule` (
 -- Tabellstruktur `ha_log`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_log` (
+CREATE TABLE `ha_log` (
 `LogId` int(11) NOT NULL,
   `LogDate` datetime NOT NULL,
   `LogName` varchar(250) NOT NULL,
   `LogLevel` varchar(50) NOT NULL,
   `LogMessage` text NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -113,11 +113,11 @@ CREATE TABLE IF NOT EXISTS `ha_log` (
 -- Tabellstruktur `ha_settings`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_settings` (
+CREATE TABLE `ha_settings` (
 `SettingId` int(11) NOT NULL,
   `SettingName` varchar(250) NOT NULL,
   `SettingValue` varchar(250) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumpning av Data i tabell `ha_settings`
@@ -138,20 +138,20 @@ INSERT INTO `ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES
 -- Tabellstruktur `ha_users`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_users` (
+CREATE TABLE `ha_users` (
 `UserId` int(11) NOT NULL,
   `UserName` varchar(30) NOT NULL,
   `UserPassword` varchar(128) NOT NULL,
   `UserMail` varchar(50) NOT NULL,
   `UserSalt` varchar(128) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumpning av Data i tabell `ha_users`
 --
 
 INSERT INTO `ha_users` (`UserId`, `UserName`, `UserPassword`, `UserMail`, `UserSalt`) VALUES
-(1, 'admin', 'd5ba1fad157d124551e1b876241d881ab0bb1c504e08ff8a9fe7cbec6a77a861902f4faa02ce2b0a0134d5c349e103ae0c02586d5a6d316c2550d3a967cf1560', 'admin@admin.com', '3a281d1de9ebfe51ccbc96dcab090ca7a8721df675e2249cf8f3f6dfc9c70ecaca5e27c43161879eedd3d559d4a7222dd393a31be8bac81b3118711b1cca25ed'),
+(1, 'admin', 'd5ba1fad157d124551e1b876241d881ab0bb1c504e08ff8a9fe7cbec6a77a861902f4faa02ce2b0a0134d5c349e103ae0c02586d5a6d316c2550d3a967cf1560', 'admin@admin.com', '3a281d1de9ebfe51ccbc96dcab090ca7a8721df675e2249cf8f3f6dfc9c70ecaca5e27c43161879eedd3d559d4a7222dd393a31be8bac81b3118711b1cca25ed');
 
 -- --------------------------------------------------------
 
@@ -159,11 +159,11 @@ INSERT INTO `ha_users` (`UserId`, `UserName`, `UserPassword`, `UserMail`, `UserS
 -- Tabellstruktur `ha_user_login`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_user_login` (
+CREATE TABLE `ha_user_login` (
 `Id` int(11) NOT NULL,
   `UserId` int(11) NOT NULL,
   `Date` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Index för dumpade tabeller
