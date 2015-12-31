@@ -157,10 +157,8 @@ def poweralloff():
 def verify_password(username, password):
 	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	
-	pwd = password.split(";;;")
-	
 	cursor = db.cursor()
-	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND SHA2(CONCAT(UserPassword, '" + pwd[1] + "'), 512) = '" + pwd[0] + "'")
+	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND SHA2(CONCAT(UserPassword, '" + request.user_agent.string + "'), 512) = '" + password + "'")
 	data = cursor.fetchone()
     
 	if data is None:
