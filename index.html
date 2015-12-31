@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>CR Smart Home by crundberg</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>CR Smart Home</h1>
+        <p>A Raspberry Pi home automation project</p>
+
+        <p class="view"><a href="https://github.com/crundberg/home-automation">View the Project on GitHub <small>crundberg/home-automation</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/crundberg/home-automation/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/crundberg/home-automation/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/crundberg/home-automation">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="home-automation" class="anchor" href="#home-automation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Home-Automation</h1>
+
+<p>A Raspberry Pi home automation project to control Nexa remote switch.</p>
+
+<h2>
+<a id="hardware" class="anchor" href="#hardware" aria-hidden="true"><span class="octicon octicon-link"></span></a>Hardware</h2>
+
+<ul>
+<li>Raspberry Pi</li>
+<li>RF Transmitter and Receiver 433 MHz (<a href="http://www.kjell.com/se/sortiment/el/elektronik/fjarrstyrning/sandar-och-mottagarmodul-433-mhz-p88905">Like this one</a>)</li>
+</ul>
+
+<h2>
+<a id="wiring" class="anchor" href="#wiring" aria-hidden="true"><span class="octicon octicon-link"></span></a>Wiring</h2>
+
+<p>Here's a wiring example for a Raspberry Pi 2</p>
+
+<p><img src="http://www.crundberg.se/wp-content/uploads/2015/12/Breadboard.png" alt="Wiring"></p>
+
+<h2>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+
+<h3>
+<a id="preparations" class="anchor" href="#preparations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preparations</h3>
+
+<p>If you install Home-Automation on your Raspberry Pi you'll need to extend the swap file from 100 to 300 during the installation. I recommend to change back when the installation is done.</p>
+
+<pre><code>sudo nano /etc/dphys-swapfile
+CONF_SWAPSIZE=300
+sudo /etc/init.d/dphys-swapfile stop
+sudo /etc/init.d/dphys-swapfile start
+</code></pre>
+
+<h3>
+<a id="install-required-packages" class="anchor" href="#install-required-packages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install required packages</h3>
+
+<p>Install the following packages. The packages pi_switch and pi-switch-python takes a while to install, please be patient.</p>
+
+<pre><code>sudo apt-get update
+sudo apt-get install mysql-server
+sudo apt-get install python-mysqldb
+sudo apt-get install apache2
+sudo apt-get install php5 php5-curl php5-mysql libapache2-mod-php5
+sudo apt-get install python-dev libboost-python-dev python-pip
+sudo pip install Flask
+sudo pip install flask-httpauth
+
+cd /home/pi/Documents
+git clone git://git.drogon.net/wiringPi
+cd wiringPi
+./build
+
+sudo pip install pi_switch
+
+cd /home/pi/Documents
+git clone https://github.com/lexruee/pi-switch-python.git
+cd pi-switch-python
+sudo python setup.py install
+</code></pre>
+
+<h3>
+<a id="configure-webserver" class="anchor" href="#configure-webserver" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure webserver</h3>
+
+<p>Open configuration file for Apache
+<code>sudo nano /etc/apache2/sites-available/000-default.conf</code></p>
+
+<p>Find the row <code>DocumentRoot /var/www</code> and replace it with <code>DocumentRoot /home/pi/Documents/home-automation-webgui</code>.
+Also add the following code.</p>
+
+<pre><code>&lt;Directory /home/pi/Documents/home-automation-webgui/ &gt;
+  Options Indexes FollowSymLinks
+  AllowOverride None
+  Require all granted
+&lt;/Directory&gt;
+</code></pre>
+
+<p>Restart Apache with <code>sudo /etc/init.d/apache2 restart</code></p>
+
+<h3>
+<a id="install-home-automation" class="anchor" href="#install-home-automation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Home-Automation</h3>
+
+<pre><code>cd /home/pi/Documents
+git clone https://github.com/crundberg/home-automation
+git clone https://github.com/crundberg/home-automation-webgui
+
+# Import MySQL database
+mysql -u root -p mysql &lt; /home/pi/Documents/home-automation/homeautomation.sql
+</code></pre>
+
+<h2>
+<a id="start-program" class="anchor" href="#start-program" aria-hidden="true"><span class="octicon octicon-link"></span></a>Start program</h2>
+
+<h3>
+<a id="start-manually" class="anchor" href="#start-manually" aria-hidden="true"><span class="octicon octicon-link"></span></a>Start manually</h3>
+
+<p>Start the program with <code>sudo python /home/pi/Documents/home-automation/main.py</code> and start the API with <code>sudo python /home/pi/Documents/home-automation/API.py</code></p>
+
+<h3>
+<a id="autostart" class="anchor" href="#autostart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Autostart</h3>
+
+<pre><code>sudo cp /home/pi/Documents/home-automation/autostart/homeautomation /etc/init.d/
+sudo chmod +x /etc/init.d/homeautomation
+sudo update-rc.d homeautomation defaults
+</code></pre>
+
+<h3>
+<a id="use-it" class="anchor" href="#use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use it!</h3>
+
+<p>Go to <code>http://your-raspberry-ip/</code>. Log in with username <code>admin</code> and password <code>admin123</code>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/crundberg">crundberg</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
