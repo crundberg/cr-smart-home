@@ -13,14 +13,14 @@ SET time_zone = "+00:00";
 --
 -- Databas: `homeautomation`
 --
-CREATE DATABASE IF NOT EXISTS `homeautomation` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `homeautomation`;
+CREATE DATABASE IF NOT EXISTS `crsmarthome` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `crsmarthome`;
 
 --
 -- User: `hauser `
 --
 GRANT USAGE ON *.* TO 'hauser'@'localhost' IDENTIFIED BY PASSWORD '*07BE3499235CA0B7EE65F34EB34DACFE9CFD9942';
-GRANT ALL PRIVILEGES ON `homeautomation`.* TO 'hauser'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON `crsmarthome`.* TO 'hauser'@'localhost' WITH GRANT OPTION;
 
 --
 -- Procedurer

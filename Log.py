@@ -3,7 +3,7 @@ import MySQLdb
 import sys
 from Config import Config
 
-logger = logging.getLogger('home-automation')
+logger = logging.getLogger('cr-smart-home')
 
 class Log:
 	#---------------------------------------------------------------------------# 

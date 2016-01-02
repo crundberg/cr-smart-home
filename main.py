@@ -18,11 +18,11 @@ def main():
 	handler = logging.handlers.TimedRotatingFileHandler(Config.Log_Filename, when="midnight", interval=1, backupCount=7)
 	handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
-	logger = logging.getLogger('home-automation')
+	logger = logging.getLogger('cr-smart-home')
 	logger.addHandler(handler)
 	logger.setLevel(Config.Log_Level)
 	
-	log.info('Server', 'Starting Home Automation %s...' % Config.Version)
+	log.info('Server', 'Starting CR Smart Home %s...' % Config.Version)
 	
 	#---------------------------------------------------------------------------# 
 	# Upgrade

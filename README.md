@@ -1,4 +1,4 @@
-# Home-Automation
+# CR Smart Home
 A Raspberry Pi home automation project to control Nexa remote switch.
 
 ## Hardware
@@ -13,7 +13,7 @@ Here's a wiring example for a Raspberry Pi 2
 ## Install
 
 ### Preparations
-If you install Home-Automation on your Raspberry Pi you'll need to extend the swap file from 100 to 300 during the installation. I recommend to change back when the installation is done.
+If you install CR Smart Home on your Raspberry Pi you'll need to extend the swap file from 100 to 300 during the installation. I recommend to change back when the installation is done.
 ```
 sudo nano /etc/dphys-swapfile
 CONF_SWAPSIZE=300
@@ -50,11 +50,11 @@ sudo python setup.py install
 Open configuration file for Apache
 `sudo nano /etc/apache2/sites-available/000-default.conf`
 
-Find the row `DocumentRoot /var/www` and replace it with `DocumentRoot /home/pi/Documents/home-automation-webgui`.
+Find the row `DocumentRoot /var/www` and replace it with `DocumentRoot /home/pi/Documents/cr-smart-home-webgui`.
 Also add the following code.
 
 ```
-<Directory /home/pi/Documents/home-automation-webgui/ >
+<Directory /home/pi/Documents/cr-smart-home-webgui/ >
   Options Indexes FollowSymLinks
   AllowOverride None
   Require all granted
@@ -66,23 +66,23 @@ Restart Apache with `sudo /etc/init.d/apache2 restart`
 ### Install Home-Automation
 ```
 cd /home/pi/Documents
-git clone https://github.com/crundberg/home-automation
-git clone https://github.com/crundberg/home-automation-webgui
+git clone https://github.com/crundberg/cr-smart-home
+git clone https://github.com/crundberg/cr-smart-home-webgui
 
 # Import MySQL database
-mysql -u root -p mysql < /home/pi/Documents/home-automation/homeautomation.sql
+mysql -u root -p mysql < /home/pi/Documents/home-automation/crsmarthome.sql
 ```
 
 ## Start program
 
 ### Start manually
-Start the program with `sudo python /home/pi/Documents/home-automation/main.py` and start the API with `sudo python /home/pi/Documents/home-automation/API.py`
+Start the program with `sudo python /home/pi/Documents/cr-smart-home/main.py` and start the API with `sudo python /home/pi/Documents/cr-smart-home/API.py`
 
 ### Autostart
 ```
-sudo cp /home/pi/Documents/home-automation/autostart/homeautomation /etc/init.d/
-sudo chmod +x /etc/init.d/homeautomation
-sudo update-rc.d homeautomation defaults
+sudo cp /home/pi/Documents/cr-smart-home/autostart/crsmarthome /etc/init.d/
+sudo chmod +x /etc/init.d/crsmarthome
+sudo update-rc.d crsmarthome defaults
 ```
 
 ### Use it!

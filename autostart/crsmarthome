@@ -1,0 +1,37 @@
+#!/bin/bash
+# /etc/init.d/crsmarthome
+
+### BEGIN INIT INFO
+# Provides:          crsmarthome
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: A Raspberry Pi home automation project
+# Description:       A Raspberry Pi home automation project
+### END INIT INFO
+
+
+case "$1" in 
+	start)
+		echo "Starting CR Smart Home"
+		python /home/pi/Documents/cr-smart-home/main.py &
+		python /home/pi/Documents/cr-smart-home/API.py &
+		;;
+	stop)
+		echo "Stopping CR Smart Home"
+		ps -ef | grep main.py | grep -v grep | awk '{print $2}' | xargs kill
+		ps -ef | grep API.py | grep -v grep | awk '{print $2}' | xargs kill
+		;;
+	restart)
+		echo "Restart CR Smart Home"
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: /etc/init.d/crsmarthome start|stop|restart"
+		exit 1
+		;;
+esac
+
+exit 0

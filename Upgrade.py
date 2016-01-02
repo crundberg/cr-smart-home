@@ -80,6 +80,10 @@ class Upgrade:
 				self.SQLQuery("ALTER TABLE `ha_rooms` MODIFY `RoomId` int(11) NOT NULL AUTO_INCREMENT")
 				self.SQLQuery("ALTER TABLE `ha_lamp_objects` ADD `LampRoomId` INT(11) NULL AFTER `LampId`, ADD INDEX (`LampRoomId`)")
 				self.SQLQuery("ALTER TABLE `ha_lamp_objects` ADD FOREIGN KEY (`LampRoomId`) REFERENCES `homeautomation`.`ha_rooms`(`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION")
+
+			# Upgrade to v0.1.4
+			if (cmp(self.VersionToInt("v0.1.4"), self.VersionToInt(dbVersion)) > 0):
+				self.log.info("Server", "Start upgrading to v0.1.4")
 			
 			# Upgrade finished
 			if (self.error == 0):

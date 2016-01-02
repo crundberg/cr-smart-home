@@ -49,3 +49,24 @@ Moved some settings from config-file to database.
 
 ## 2016-01-02
 Added room feature.
+
+## 2016-01-03
+Changed project name, run the following SQL-queries.
+```
+RENAME DATABASE homeautomation TO crsmarthome;
+GRANT ALL PRIVILEGES ON `crsmarthome`.* TO 'hauser'@'localhost' WITH GRANT OPTION;
+```
+
+Open configuration file for Apache `sudo nano /etc/apache2/sites-available/000-default.conf`
+Find the row `DocumentRoot /home/pi/Documents/home-automation-webgui` and replace it with `DocumentRoot /home/pi/Documents/cr-smart-home-webgui`.
+Find the row `<Directory /home/pi/Documents/home-automation-webgui/ >` and replace it with `<Directory /home/pi/Documents/cr-smart-home-webgui/ >`.
+
+Upgrade autostart file
+```
+sudo /etc/init.d/homeautomation stop
+sudo update-rc.d [-f] homeautomation remove
+sudo cp /home/pi/Documents/cr-smart-home/autostart/crsmarthome /etc/init.d/
+sudo chmod +x /etc/init.d/crsmarthome
+sudo update-rc.d crsmarthome defaults
+sudo /etc/init.d/crsmarthome start
+```
