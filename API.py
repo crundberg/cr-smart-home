@@ -31,7 +31,7 @@ def get_lamps():
 
 	try:
 		#Execure SQL-Query
-		cursor.execute("SELECT * FROM ha_lamp_objects")
+		cursor.execute("SELECT * FROM ha_lamp_objects ORDER BY LampOrder ASC")
 		results = cursor.fetchall()
 	
 		#Loop result from database
@@ -45,13 +45,15 @@ def get_lamps():
 			d['PowerOnMan'] = row[4]
 			d['CmdOn'] = row[5]
 			d['CmdOff'] = row[6]
+			d['IncInAll'] = row[7]
+			d['Order'] = row[8]
 			lamps.append(d)
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
-			return make_response(jsonify({'MySQL-Error': e.args[1]}), 404)
+			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
 		except IndexError:
-			return make_response(jsonify({'MySQL-Error': str(e)}), 404)
+			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
 
 	finally:
 		#Close database connection
@@ -89,9 +91,9 @@ def get_lamp(lamp_id):
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
-			return make_response(jsonify({'MySQL-Error': e.args[1]}), 404)
+			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
 		except IndexError:
-			return make_response(jsonify({'MySQL-Error': str(e)}), 404)
+			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
 
 	finally:
 		#Close database connection
@@ -115,6 +117,24 @@ def power_lamp():
 	json = {
 		'id': request.json['id'],
 		'cmd': request.json.get('cmd', ""),
+		'result': result
+	}
+
+	return jsonify({'lamp': json})
+
+#---------------------------------------------------------------------------# 
+# Send power on to all lamps
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/lamps/room', methods=['POST'])
+@auth.login_required
+def powerroom():
+	if not request.json or not 'id' in request.json or not 'PowerOn' in request.json:
+		abort(400)
+	
+	lamp = Lamp()
+	result = lamp.PowerRoom(request.json['id'], request.json['PowerOn'])
+
+	json = {
 		'result': result
 	}
 
@@ -177,4 +197,4 @@ def not_found(error):
 # Start app
 #---------------------------------------------------------------------------#
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=5000, debug=False)
+	app.run(host='0.0.0.0', port=5000, debug=True)

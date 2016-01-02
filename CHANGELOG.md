@@ -46,3 +46,6 @@ ALTER TABLE `ha_settings` CHANGE `SettingId` `SettingId` INT( 11 ) NOT NULL AUTO
 
 ## 2015-12-30
 Moved some settings from config-file to database.
+
+## 2016-01-02
+Added room feature.

@@ -163,6 +163,62 @@ class Lamp:
 	#---------------------------------------------------------------------------# 
 	# Power on all lamp objects
 	#---------------------------------------------------------------------------# 
+	def PowerRoom(self, Id, PowerOn):
+		#Loop lamps och power on
+		dbPowerRoom = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursorPowerRoom = dbPowerRoom.cursor()
+		
+		try:
+			#Execure SQL-Query
+			cursorPowerRoom.execute("SELECT LampId, LampName, LampCmdOn, LampCmdOff, RoomName FROM ha_lamp_objects LEFT JOIN ha_rooms ON RoomId=LampRoomId WHERE LampRoomId = %s" % Id)
+			results = cursorPowerRoom.fetchall()
+		
+			#Loop result from database
+			for row in results:
+				#Move database row to variables
+				dbId = row[0]
+				dbName = row[1]
+				dbCmdOn = row[2]
+				dbCmdOff = row[3]
+				dbRoomName = row[4]
+			
+				if (PowerOn == "1"):
+					self.LampCmd(dbCmdOn)
+				else:
+					self.LampCmd(dbCmdOff)
+			
+			if (PowerOn == "1"):
+				self.log.info('Server', 'Sending power on to room %s...' % dbRoomName)
+			else:
+				self.log.info('Server', 'Sending power off to room %s...' % dbRoomName)
+	
+		except MySQLdb.Error, e:
+			#Log exceptions
+			try:
+				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				self.log.error('Server', 'MySQL Error: %s' % str(e))
+		finally:
+			#Close database connection
+			cursorPowerRoom.close()
+			dbPowerRoom.close()
+			
+		#Update database
+		try:
+			cursorPowerRoom.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s" % (PowerIn, Id))
+			dbPowerRoom.commit()
+		except MySQLdb.Error, e:
+			dbPowerRoom.rollback()
+			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+		except:
+			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		
+		return 'Done!'
+
+	#---------------------------------------------------------------------------# 
+	# Power on all lamp objects
+	#---------------------------------------------------------------------------# 
 	def PowerOnAllObjects(self):
 		self.log.info('Server', 'Sending power on to all objects..')
 

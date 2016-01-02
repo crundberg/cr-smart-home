@@ -13,7 +13,7 @@ class Upgrade:
 	def __init__(self):
 		self.log = Log()
 		self.error = 0
-		self.Version = "v0.1.2"
+		self.Version = "v0.1.3"
 	
 
 	#---------------------------------------------------------------------------# 
@@ -71,6 +71,15 @@ class Upgrade:
 				self.log.info("Server", "Start upgrading to v0.1.2")
 				self.SQLQuery("ALTER TABLE `ha_settings` CHANGE `SettingId` `SettingId` INT( 11 ) NOT NULL AUTO_INCREMENT")
 				self.SQLQuery("INSERT INTO ha_settings (SettingId, SettingName, SettingValue) VALUES (NULL, 'City', 'Gothenburg'), (NULL, 'Latitude', '57.70887'), (NULL, 'Longitude', '11.97456'), (NULL, 'Zenith', '90.83333'), (NULL, 'LocalTimeOffset', '1'), (NULL, 'WeatherAPIKey', '')")
+
+			# Upgrade to v0.1.3
+			if (cmp(self.VersionToInt("v0.1.3"), self.VersionToInt(dbVersion)) > 0):
+				self.log.info("Server", "Start upgrading to v0.1.3")
+				self.SQLQuery("CREATE TABLE `ha_rooms` (`RoomId` int(11) NOT NULL DEFAULT '0', `RoomName` varchar(255) NOT NULL, `RoomDescription` text NOT NULL, `RoomOrder` int(11) NOT NULL DEFAULT '100') ENGINE=InnoDB DEFAULT CHARSET=latin1")
+				self.SQLQuery("ALTER TABLE `ha_rooms` ADD PRIMARY KEY (`RoomId`)")
+				self.SQLQuery("ALTER TABLE `ha_rooms` MODIFY `RoomId` int(11) NOT NULL AUTO_INCREMENT")
+				self.SQLQuery("ALTER TABLE `ha_lamp_objects` ADD `LampRoomId` INT(11) NULL AFTER `LampId`, ADD INDEX (`LampRoomId`)")
+				self.SQLQuery("ALTER TABLE `ha_lamp_objects` ADD FOREIGN KEY (`LampRoomId`) REFERENCES `homeautomation`.`ha_rooms`(`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION")
 			
 			# Upgrade finished
 			if (self.error == 0):
