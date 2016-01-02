@@ -68,6 +68,7 @@ INSERT INTO `ha_data` (`DataId`, `DataName`, `DataText`, `DataStatus`, `DataLast
 
 CREATE TABLE `ha_lamp_objects` (
 `LampId` int(11) NOT NULL,
+  `LampRoomId` int(11) DEFAULT NULL,
   `LampName` varchar(255) NOT NULL,
   `LampType` varchar(255) NOT NULL,
   `LampPowerOn` tinyint(2) NOT NULL,
@@ -106,6 +107,19 @@ CREATE TABLE `ha_log` (
   `LogLevel` varchar(50) NOT NULL,
   `LogMessage` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `ha_rooms`
+--
+
+CREATE TABLE IF NOT EXISTS `ha_rooms` (
+`RoomId` int(11) NOT NULL,
+  `RoomName` varchar(255) NOT NULL,
+  `RoomDescription` text NOT NULL,
+  `RoomOrder` int(11) NOT NULL DEFAULT '100'
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -192,6 +206,12 @@ ALTER TABLE `ha_lamp_schedule`
 --
 ALTER TABLE `ha_log`
  ADD PRIMARY KEY (`LogId`);
+ 
+--
+-- Index för tabell `ha_rooms`
+--
+ALTER TABLE `ha_rooms`
+ ADD PRIMARY KEY (`RoomId`);
 
 --
 -- Index för tabell `ha_settings`
@@ -241,6 +261,11 @@ MODIFY `LogId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 ALTER TABLE `ha_settings`
 MODIFY `SettingId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 --
+-- AUTO_INCREMENT för tabell `ha_rooms`
+--
+ALTER TABLE `ha_rooms`
+MODIFY `RoomId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+--
 -- AUTO_INCREMENT för tabell `ha_users`
 --
 ALTER TABLE `ha_users`
@@ -253,6 +278,12 @@ MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 --
 -- Restriktioner för dumpade tabeller
 --
+
+--
+-- Restriktioner för tabell `ha_lamp_objects`
+--
+ALTER TABLE `ha_lamp_objects`
+ADD CONSTRAINT `ha_lamp_objects_ibfk_1` FOREIGN KEY (`LampRoomId`) REFERENCES `ha_rooms` (`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 --
 -- Restriktioner för tabell `ha_lamp_schedule`
