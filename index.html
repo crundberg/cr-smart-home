@@ -1,35 +1,35 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <title>CR Smart Home by crundberg</title>
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <title>CR Smart Home by crundberg</title>
   </head>
-
   <body>
-    <header>
-      <div class="inner">
+    <div class="wrapper">
+      <header>
         <h1>CR Smart Home</h1>
-        <h2>A Raspberry Pi home automation project</h2>
-        <a href="https://github.com/crundberg/home-automation" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+        <p>A Raspberry Pi home automation project</p>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>
-<a id="home-automation" class="anchor" href="#home-automation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Home-Automation</h1>
+        <p class="view"><a href="https://github.com/crundberg/cr-smart-home">View the Project on GitHub <small>crundberg/cr-smart-home</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/crundberg/cr-smart-home/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/crundberg/cr-smart-home/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/crundberg/cr-smart-home">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="cr-smart-home" class="anchor" href="#cr-smart-home" aria-hidden="true"><span class="octicon octicon-link"></span></a>CR Smart Home</h1>
 
 <p>A Raspberry Pi home automation project to control Nexa remote switch.</p>
 
@@ -54,7 +54,7 @@
 <h3>
 <a id="preparations" class="anchor" href="#preparations" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preparations</h3>
 
-<p>If you install Home-Automation on your Raspberry Pi you'll need to extend the swap file from 100 to 300 during the installation. I recommend to change back when the installation is done.</p>
+<p>If you install CR Smart Home on your Raspberry Pi you'll need to extend the swap file from 100 to 300 during the installation. I recommend to change back when the installation is done.</p>
 
 <pre><code>sudo nano /etc/dphys-swapfile
 CONF_SWAPSIZE=300
@@ -95,10 +95,10 @@ sudo python setup.py install
 <p>Open configuration file for Apache
 <code>sudo nano /etc/apache2/sites-available/000-default.conf</code></p>
 
-<p>Find the row <code>DocumentRoot /var/www</code> and replace it with <code>DocumentRoot /home/pi/Documents/home-automation-webgui</code>.
+<p>Find the row <code>DocumentRoot /var/www</code> and replace it with <code>DocumentRoot /home/pi/Documents/cr-smart-home-webgui</code>.
 Also add the following code.</p>
 
-<pre><code>&lt;Directory /home/pi/Documents/home-automation-webgui/ &gt;
+<pre><code>&lt;Directory /home/pi/Documents/cr-smart-home-webgui/ &gt;
   Options Indexes FollowSymLinks
   AllowOverride None
   Require all granted
@@ -111,11 +111,11 @@ Also add the following code.</p>
 <a id="install-home-automation" class="anchor" href="#install-home-automation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install Home-Automation</h3>
 
 <pre><code>cd /home/pi/Documents
-git clone https://github.com/crundberg/home-automation
-git clone https://github.com/crundberg/home-automation-webgui
+git clone https://github.com/crundberg/cr-smart-home
+git clone https://github.com/crundberg/cr-smart-home-webgui
 
 # Import MySQL database
-mysql -u root -p mysql &lt; /home/pi/Documents/home-automation/homeautomation.sql
+mysql -u root -p mysql &lt; /home/pi/Documents/home-automation/crsmarthome.sql
 </code></pre>
 
 <h2>
@@ -124,39 +124,27 @@ mysql -u root -p mysql &lt; /home/pi/Documents/home-automation/homeautomation.sq
 <h3>
 <a id="start-manually" class="anchor" href="#start-manually" aria-hidden="true"><span class="octicon octicon-link"></span></a>Start manually</h3>
 
-<p>Start the program with <code>sudo python /home/pi/Documents/home-automation/main.py</code> and start the API with <code>sudo python /home/pi/Documents/home-automation/API.py</code></p>
+<p>Start the program with <code>sudo python /home/pi/Documents/cr-smart-home/main.py</code> and start the API with <code>sudo python /home/pi/Documents/cr-smart-home/API.py</code></p>
 
 <h3>
 <a id="autostart" class="anchor" href="#autostart" aria-hidden="true"><span class="octicon octicon-link"></span></a>Autostart</h3>
 
-<pre><code>sudo cp /home/pi/Documents/home-automation/autostart/homeautomation /etc/init.d/
-sudo chmod +x /etc/init.d/homeautomation
-sudo update-rc.d homeautomation defaults
+<pre><code>sudo cp /home/pi/Documents/cr-smart-home/autostart/crsmarthome /etc/init.d/
+sudo chmod +x /etc/init.d/crsmarthome
+sudo update-rc.d crsmarthome defaults
 </code></pre>
 
 <h3>
 <a id="use-it" class="anchor" href="#use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use it!</h3>
 
 <p>Go to <code>http://your-raspberry-ip/</code>. Log in with username <code>admin</code> and password <code>admin123</code>.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/crundberg/home-automation/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/crundberg/home-automation/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/crundberg/home-automation"></a> is maintained by <a href="https://github.com/crundberg">crundberg</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/crundberg">crundberg</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-
-  
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
