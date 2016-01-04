@@ -65,9 +65,9 @@ class Lamp:
 	
 	
 	#---------------------------------------------------------------------------# 
-	# Loop all lamp objects
+	# Schedule
 	#---------------------------------------------------------------------------# 
-	def LoopLampObjects(self):
+	def Schedule(self):
 		#DateTime
 		dtNow = datetime.datetime.now()
 		dtDateNow = datetime.datetime.now().date()
@@ -128,6 +128,7 @@ class Lamp:
 					sStart = '%s %s' % (dtDateNow - datetime.timedelta(days=1), dbOn)
 					sStop = '%s %s' % (dtDateNow - datetime.timedelta(days=1), dbOff)
 			
+				#Convert string to datetime
 				dtStart = datetime.datetime.strptime(sStart, '%Y-%m-%d %H:%M:%S')
 				dtStop = datetime.datetime.strptime(sStop, '%Y-%m-%d %H:%M:%S')
 			
@@ -159,23 +160,73 @@ class Lamp:
 			#Close database connection
 			cursor.close()
 			db.close()
+			
+	#---------------------------------------------------------------------------# 
+	# Power to single lamp
+	#---------------------------------------------------------------------------# 
+	def PowerSingle(self, Id, PowerOn):
+		# Connect to database
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+		
+		# Select lamp from database
+		try:
+			cursor.execute("SELECT LampName, LampCmdOn, LampCmdOff FROM ha_lamp_objects WHERE LampId = %s" % Id)
+			results = cursor.fetchone()
+		
+			#Move result to variables
+			dbName = results[0]
+			dbCmdOn = results[1]
+			dbCmdOff = results[2]
+		
+			if (PowerOn == "1"):
+				# Send power on command
+				self.LampCmd(dbCmdOn)
+				self.log.info('API', 'Sending power on to %s' % dbName)
+			else:
+				# Send power off command
+				self.LampCmd(dbCmdOff)
+				self.log.info('API', 'Sending power off to %s' % dbName)
+		except MySQLdb.Error, e:
+			# Log exceptions
+			try:
+				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				self.log.error('API', 'MySQL Error: %s' % str(e))
+			
+		# Update database
+		try:
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampId = %s" % (PowerOn, Id))
+			db.commit()
+		except MySQLdb.Error, e:
+			db.rollback()
+			self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+		except:
+			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		finally:
+			# Close database connection
+			cursor.close()
+			db.close()
+		
+		return 'Done!'
 
 	#---------------------------------------------------------------------------# 
-	# Power on all lamp objects
+	# Power to all lamps in room
 	#---------------------------------------------------------------------------# 
 	def PowerRoom(self, Id, PowerOn):
-		#Loop lamps och power on
-		dbPowerRoom = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursorPowerRoom = dbPowerRoom.cursor()
+		# Connect to database
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
 		
 		try:
-			#Execure SQL-Query
-			cursorPowerRoom.execute("SELECT LampId, LampName, LampCmdOn, LampCmdOff, RoomName FROM ha_lamp_objects LEFT JOIN ha_rooms ON RoomId=LampRoomId WHERE LampRoomId = %s" % Id)
-			results = cursorPowerRoom.fetchall()
+			# Select lamps from database
+			cursor.execute("SELECT LampId, LampName, LampCmdOn, LampCmdOff, RoomName FROM ha_lamp_objects LEFT JOIN ha_rooms ON RoomId=LampRoomId WHERE LampRoomId = %s" % Id)
+			results = cursor.fetchall()
 		
-			#Loop result from database
+			# Loop result from database
 			for row in results:
-				#Move database row to variables
+				# Move result to variables
 				dbId = row[0]
 				dbName = row[1]
 				dbCmdOn = row[2]
@@ -183,132 +234,95 @@ class Lamp:
 				dbRoomName = row[4]
 			
 				if (PowerOn == "1"):
+					# Send power on command
 					self.LampCmd(dbCmdOn)
 				else:
+					# Send power of command
 					self.LampCmd(dbCmdOff)
 			
+			# Log
 			if (PowerOn == "1"):
-				self.log.info('Server', 'Sending power on to room %s...' % dbRoomName)
+				self.log.info('API', 'Sending power on to room %s...' % dbRoomName)
 			else:
-				self.log.info('Server', 'Sending power off to room %s...' % dbRoomName)
+				self.log.info('API', 'Sending power off to room %s...' % dbRoomName)
 	
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
-				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
-				self.log.error('Server', 'MySQL Error: %s' % str(e))
-		finally:
-			#Close database connection
-			cursorPowerRoom.close()
-			dbPowerRoom.close()
+				self.log.error('API', 'MySQL Error: %s' % str(e))
 			
 		#Update database
 		try:
-			cursorPowerRoom.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s" % (PowerIn, Id))
-			dbPowerRoom.commit()
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s" % (PowerOn, Id))
+			db.commit()
 		except MySQLdb.Error, e:
-			dbPowerRoom.rollback()
-			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+			db.rollback()
+			self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 		except:
-			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
+			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		finally:
+			#Close database connection
+			cursor.close()
+			db.close()
 		
 		return 'Done!'
-
-	#---------------------------------------------------------------------------# 
-	# Power on all lamp objects
-	#---------------------------------------------------------------------------# 
-	def PowerOnAllObjects(self):
-		self.log.info('Server', 'Sending power on to all objects..')
-
-		#Update database
-		dbPowerAllOn = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursorPowerAllOn = dbPowerAllOn.cursor()
-
-		try:
-			cursorPowerAllOn.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 1 WHERE LampIncInAll = 1")
-			dbPowerAllOn.commit()
-		except MySQLdb.Error, e:
-			dbPowerAllOn.rollback()
-			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
-		except:
-			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
-
-		#Loop lamps och power on
-		try:
-			#Execure SQL-Query
-			cursorPowerAllOn.execute("SELECT LampId, LampName, LampCmdOn FROM ha_lamp_objects WHERE LampIncInAll = 1")
-			results = cursorPowerAllOn.fetchall()
 		
-			#Loop result from database
+	#---------------------------------------------------------------------------# 
+	# Power to all lamps
+	#---------------------------------------------------------------------------# 
+	def PowerAll(self, PowerOn):
+		# Connect to database
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+		
+		try:
+			# Select lamps from database
+			cursor.execute("SELECT LampCmdOn, LampCmdOff FROM ha_lamp_objects WHERE LampIncInAll = 1")
+			results = cursor.fetchall()
+		
+			# Loop result from database
 			for row in results:
-				#Move database row to variables
-				dbId = row[0]
-				dbName = row[1]
-				dbCmdOn = row[2]
-				
-				self.LampCmd(dbCmdOn)
+				# Move result to variables
+				dbCmdOn = row[0]
+				dbCmdOff = row[1]
+			
+				if (PowerOn == "1"):
+					# Send power on command
+					self.LampCmd(dbCmdOn)
+				else:
+					# Send power on command
+					self.LampCmd(dbCmdOff)
+			
+			# Log
+			if (PowerOn == "1"):
+				self.log.info('API', 'Sending power on to all lamps')
+			else:
+				self.log.info('API', 'Sending power off to all lamps')
 	
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
-				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
-				self.log.error('Server', 'MySQL Error: %s' % str(e))
-		finally:
-			#Close database connection
-			cursorPowerAllOn.close()
-			dbPowerAllOn.close()
-		
-		return 'Done!'
-
-	#---------------------------------------------------------------------------# 
-	# Power off all lamp objects
-	#---------------------------------------------------------------------------# 
-	def PowerOffAllObjects(self):
-		self.log.info('Server', 'Sending power off to all objects..')
-
+				self.log.error('API', 'MySQL Error: %s' % str(e))
+			
 		#Update database
-		dbPowerAllOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursorPowerAllOff = dbPowerAllOff.cursor()
-
 		try:
-			cursorPowerAllOff.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = 0 WHERE LampIncInAll = 1")
-			dbPowerAllOff.commit()
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampIncInAll = 1" % PowerOn)
+			db.commit()
 		except MySQLdb.Error, e:
-			dbPowerAllOff.rollback()
-			self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+			db.rollback()
+			self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 		except:
-			self.log.error('Server', 'Unexpected error: %s' % (sys.exc_info()[0]))
-
-		#Loop lamps och power off
-		try:
-			#Execure SQL-Query
-			cursorPowerAllOff.execute("SELECT LampId, LampName, LampCmdOff FROM ha_lamp_objects WHERE LampIncInAll = 1")
-			results = cursorPowerAllOff.fetchall()
-		
-			#Loop result from database
-			for row in results:
-				#Move database row to variables
-				dbId = row[0]
-				dbName = row[1]
-				dbCmdOff = row[2]
-				
-				self.LampCmd(dbCmdOff)
-	
-		except MySQLdb.Error, e:
-			#Log exceptions
-			try:
-				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
-	
-			except IndexError:
-				self.log.error('Server', 'MySQL Error: %s' % str(e))
+			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
 		finally:
 			#Close database connection
-			cursorPowerAllOff.close()
-			dbPowerAllOff.close()
+			cursor.close()
+			db.close()
 		
 		return 'Done!'
 		

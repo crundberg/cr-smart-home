@@ -53,7 +53,7 @@ def main():
 			sun.UpdateDb()
 	
 		#Loop through all lamps
-		lamp.LoopLampObjects()
+		lamp.Schedule()
 		
 		#Reset startup bool
 		bStartUp = False
