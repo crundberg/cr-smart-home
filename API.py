@@ -238,6 +238,27 @@ def get_dashboard():
 	return jsonify({'lamps': lamps, 'sun': sun, 'weather': weather})
 
 #---------------------------------------------------------------------------# 
+# Login
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/login', methods=['POST'])
+def login():
+	if not request.json or not 'username' in request.json or not 'password' in request.json:
+		abort(400)
+		
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+	cursor = db.cursor()
+	
+	cursor.execute("SELECT SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512) FROM ha_users WHERE UserName = '" + request.json['username'] + "'")
+	data = cursor.fetchone()
+    
+	json = {
+		'username': request.json['username'],
+		'password': data[0]
+	}
+
+	return jsonify({'login': json})
+
+#---------------------------------------------------------------------------# 
 # Authenticate
 #---------------------------------------------------------------------------#
 @auth.verify_password
