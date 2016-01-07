@@ -13,7 +13,7 @@ class Upgrade:
 	def __init__(self):
 		self.log = Log()
 		self.error = 0
-		self.Version = "v0.1.3"
+		self.Version = "v0.1.5"
 	
 
 	#---------------------------------------------------------------------------# 
@@ -84,6 +84,10 @@ class Upgrade:
 			# Upgrade to v0.1.4
 			if (cmp(self.VersionToInt("v0.1.4"), self.VersionToInt(dbVersion)) > 0):
 				self.log.info("Server", "Start upgrading to v0.1.4")
+
+			# Upgrade to v0.1.5
+			if (cmp(self.VersionToInt("v0.1.5"), self.VersionToInt(dbVersion)) > 0):				
+				self.SQLQuery("INSERT INTO `ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES (NULL, 'SunriseOffset', '0'), (NULL, 'SunsetOffset', '0');")
 			
 			# Upgrade finished
 			if (self.error == 0):

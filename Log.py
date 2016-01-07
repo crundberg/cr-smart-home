@@ -7,6 +7,12 @@ logger = logging.getLogger('cr-smart-home')
 
 class Log:
 	#---------------------------------------------------------------------------# 
+	# Debug
+	#---------------------------------------------------------------------------# 
+	def debug(self, Name, Message):
+		self.SQLQuery("INSERT INTO ha_log (LogDate, LogName, LogLevel, LogMessage) VALUES (NOW(), '%s', 'Debug', '%s')" % (Name, Message))
+	
+	#---------------------------------------------------------------------------# 
 	# Info
 	#---------------------------------------------------------------------------# 
 	def info(self, Name, Message):

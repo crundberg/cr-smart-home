@@ -18,6 +18,8 @@ class Sun:
 		self.localOffset = 0
 		self.latitude = 0
 		self.longitude = 0
+		self.sunriseOffset = 0
+		self.sunsetOffset = 0
 		self.GetSettings()
 		
 		if self.latitude < -90 or self.latitude > 90:
@@ -35,8 +37,8 @@ class Sun:
 	#---------------------------------------------------------------------------# 	
 	def sunIsDown(self):
 		now = datetime.datetime.now()
- 		sunrise = self.sunrise(now, self.latitude, self.longitude)
- 		sunset = self.sunset(now, self.latitude, self.longitude)
+ 		sunrise = self.sunrise(now, self.latitude, self.longitude) + datetime.timedelta(minutes=self.sunriseOffset)
+ 		sunset = self.sunset(now, self.latitude, self.longitude) + datetime.timedelta(minutes=self.sunsetOffset)
 		return (now < sunrise or now > sunset)
 		
 	#---------------------------------------------------------------------------# 
@@ -44,8 +46,8 @@ class Sun:
 	#---------------------------------------------------------------------------# 	
 	def sunIsUp(self):
 		now = datetime.datetime.now()
- 		sunrise = self.sunrise(now, self.latitude, self.longitude)
- 		sunset = self.sunset(now, self.latitude, self.longitude)
+ 		sunrise = self.sunrise(now, self.latitude, self.longitude).timedelta(minutes=sunriseOffset)
+ 		sunset = self.sunset(now, self.latitude, self.longitude).timedelta(minutes=sunsetOffset)
 		return (now > sunrise or now < sunset)
 		
 	#---------------------------------------------------------------------------# 
@@ -215,7 +217,7 @@ class Sun:
 	
 		try:
 			#Execure SQL-Query
-			cursor.execute("SELECT SettingName, SettingValue FROM ha_settings WHERE SettingName='Latitude' OR SettingName='Longitude' OR SettingName='Zenith' OR SettingName='LocalTimeOffset'")
+			cursor.execute("SELECT SettingName, SettingValue FROM ha_settings WHERE SettingName='Latitude' OR SettingName='Longitude' OR SettingName='Zenith' OR SettingName='LocalTimeOffset' OR SettingName='SunriseOffset' OR SettingName='SunsetOffset'")
 			results = cursor.fetchall()
 		
 			#Loop result from database
@@ -229,7 +231,11 @@ class Sun:
 					self.zenith = float(row[1])
 				elif (row[0] == 'LocalTimeOffset'):
 					self.localOffset = int(row[1])
-	
+				elif (row[0] == 'SunriseOffset'):
+					self.sunriseOffset = int(row[1])
+				elif (row[0] == 'SunsetOffset'):
+					self.sunsetOffset = int(row[1])	
+					
 		except MySQLdb.Error, e:
 			#Log exceptions
 			try:
