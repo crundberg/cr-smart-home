@@ -248,13 +248,16 @@ def login():
 	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursor = db.cursor()
 	
-	cursor.execute("SELECT SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512) FROM ha_users WHERE UserName = '" + request.json['username'] + "'")
+	cursor.execute("SELECT SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512) FROM ha_users WHERE UserName = '" + request.json['username'] + "' AND SHA2(CONCAT(UserPassword, '" + request.user_agent.string + "'), 512) = SHA2(CONCAT(SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512), '" + request.user_agent.string + "'), 512)")
 	data = cursor.fetchone()
     
-	json = {
-		'username': request.json['username'],
-		'password': data[0]
-	}
+	if data is None:
+		abort(401)
+	else:
+		json = {
+			'username': request.json['username'],
+			'password': data[0]
+		}
 
 	return jsonify({'login': json})
 
