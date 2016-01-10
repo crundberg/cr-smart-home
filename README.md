@@ -70,7 +70,7 @@ git clone https://github.com/crundberg/cr-smart-home
 git clone https://github.com/crundberg/cr-smart-home-webgui
 
 # Import MySQL database
-mysql -u root -p mysql < /home/pi/Documents/home-automation/crsmarthome.sql
+mysql -u root -p mysql < /home/pi/Documents/cr-smart-home/crsmarthome.sql
 ```
 
 ## Start program
