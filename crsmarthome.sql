@@ -138,7 +138,7 @@ CREATE TABLE `ha_settings` (
 --
 
 INSERT INTO `ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES
-(1, 'Version', 'v0.1.2'),
+(1, 'Version', 'v0.1.4'),
 (2, 'City', 'Gothenburg'),
 (3, 'Latitude', '57.70887'),
 (4, 'Longitude', '11.97456'),

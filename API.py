@@ -169,6 +169,7 @@ def powerall():
 @app.route("/ha/api/v1.0/dashboard", methods=['GET'])
 @auth.login_required
 def get_dashboard():
+	rooms = []
 	lamps = []
 	sun = []
 	weather = []
@@ -179,11 +180,37 @@ def get_dashboard():
 
 	try:
 		#Execure SQL-Query
-		cursor.execute("SELECT * FROM ha_lamp_objects ORDER BY LampOrder ASC")
+		cursor.execute("SELECT t1.*, IFNULL(t2.RoomName, 'Lamps'), IFNULL(t2.RoomDescription, ''), IFNULL(t2.RoomOrder, 1000) FROM ha_lamp_objects t1 LEFT JOIN ha_rooms t2 ON LampRoomId = RoomId ORDER BY -LampRoomId DESC, RoomOrder ASC, LampOrder ASC")
 		results = cursor.fetchall()
-	
+
+		nLastRoom = 0
+		nLampCount = 0
+		room = collections.OrderedDict()
+		
 		#Loop result from database
 		for row in results:
+			if (nLastRoom == 0):
+				room['Id'] = row[1]
+				room['Name'] = row[10]
+				room['Description'] = row[11]
+				room['Order'] = row[12]
+				nLastRoom = row[1]
+			
+			if (nLastRoom <> row[1]):
+				room['LampCount'] = nLampCount
+				room['Lamps'] = lamps
+				rooms.append(room)
+				
+				room = collections.OrderedDict()
+				room['Id'] = row[1]
+				room['Name'] = row[10]
+				room['Description'] = row[11]
+				room['Order'] = row[12]
+				nLastRoom = row[1]
+				nLampCount = 0
+				
+				lamps = []
+						
 			#Move database row to variables
 			d = collections.OrderedDict()
 			d['Id'] = row[0]
@@ -198,6 +225,13 @@ def get_dashboard():
 			d['Order'] = row[9]
 			lamps.append(d)
 			
+			nLampCount = nLampCount+1
+			
+		if cursor.rowcount > 0:
+			room['LampCount'] = nLampCount
+			room['Lamps'] = lamps
+			rooms.append(room)
+			
 		#Execure SQL-Query
 		cursor.execute("SELECT * FROM ha_data WHERE DataName='Sun'")
 		results = cursor.fetchone()
@@ -208,7 +242,7 @@ def get_dashboard():
 		d['Name'] = results[1]
 		d['Data'] = json.loads(results[2])
 		d['Status'] = results[3]
-		d['LastUpdated'] = results[4]
+		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
 		sun.append(d)
 		
 		#Execure SQL-Query
@@ -221,7 +255,7 @@ def get_dashboard():
 		d['Name'] = results[1]
 		d['Data'] = json.loads(results[2])
 		d['Status'] = results[3]
-		d['LastUpdated'] = results[4]
+		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
 		weather.append(d)
 	except MySQLdb.Error, e:
 		#Log exceptions
@@ -235,7 +269,7 @@ def get_dashboard():
 		cursor.close()
 		db.close()
 
-	return jsonify({'lamps': lamps, 'sun': sun, 'weather': weather})
+	return jsonify({'rooms': rooms, 'sun': sun, 'weather': weather})
 
 #---------------------------------------------------------------------------# 
 # Login
