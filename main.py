@@ -12,9 +12,7 @@ from Upgrade import Upgrade
 def main():
 	#---------------------------------------------------------------------------# 
 	# Logging - Rotate log file at midnight and keep for 7 days
-	#---------------------------------------------------------------------------#
-	log = Log()
-	
+	#---------------------------------------------------------------------------#	
 	handler = logging.handlers.TimedRotatingFileHandler(Config.Log_Filename, when="midnight", interval=1, backupCount=7)
 	handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -22,8 +20,9 @@ def main():
 	logger.addHandler(handler)
 	logger.setLevel(Config.Log_Level)
 	
+	log = Log()
 	log.info('Server', 'Starting CR Smart Home %s...' % Config.Version)
-	
+
 	#---------------------------------------------------------------------------# 
 	# Upgrade
 	#---------------------------------------------------------------------------#	
@@ -57,7 +56,7 @@ def main():
 		
 		#Reset startup bool
 		bStartUp = False
-		
+
 		#Sleep one minute
 		time.sleep(60 - datetime.now().second)
 

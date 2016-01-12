@@ -70,3 +70,24 @@ sudo chmod +x /etc/init.d/crsmarthome
 sudo update-rc.d crsmarthome defaults
 sudo /etc/init.d/crsmarthome start
 ```
+
+## 2016-01-12
+Updated autostart script, run the following commands in Terminal
+```
+sudo update-rc.d -f crsmarthome remove
+sudo cp /home/pi/Documents/cr-smart-home/autostart/crsmarthome /etc/init.d/
+sudo chmod +x /etc/init.d/crsmarthome
+sudo update-rc.d crsmarthome defaults
+```
+
+Run this command `ls -l /etc/rc?.d/*crsmarthome` and verify it looks like this:
+```
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc0.d/K01crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc1.d/K01crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc2.d/S04crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc3.d/S04crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc4.d/S04crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc5.d/S04crsmarthome -> ../init.d/crsmarthome
+lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc6.d/K01crsmarthome -> ../init.d/crsmarthome
+
+```

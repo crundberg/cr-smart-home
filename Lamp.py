@@ -3,6 +3,7 @@ import time
 import MySQLdb
 import pi_switch
 import sys
+import logging
 from Sun import Sun
 from Config import Config
 from Log import Log
@@ -12,6 +13,7 @@ class Lamp:
 	# Constructor
 	#---------------------------------------------------------------------------# 
 	def __init__(self):
+		self.logger = logging.getLogger('cr-smart-home')
 		self.log = Log()
 		self.sun = Sun()
 	
@@ -330,10 +332,9 @@ class Lamp:
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
 	def SQLQuery(self, sSQL):
-		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursor = db.cursor()
-	
 		try:
+			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+			cursor = db.cursor()
 			cursor.execute(sSQL)
 			db.commit()
 		except MySQLdb.Error, e:

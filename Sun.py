@@ -252,10 +252,9 @@ class Sun:
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
 	def SQLQuery(self, sSQL):
-		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursor = db.cursor()
-	
 		try:
+			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+			cursor = db.cursor()
 			cursor.execute(sSQL)
 			db.commit()
 		except MySQLdb.Error, e:

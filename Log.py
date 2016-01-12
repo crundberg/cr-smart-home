@@ -3,9 +3,13 @@ import MySQLdb
 import sys
 from Config import Config
 
-logger = logging.getLogger('cr-smart-home')
-
 class Log:
+	#---------------------------------------------------------------------------# 
+	# Constructor
+	#---------------------------------------------------------------------------# 
+	def __init__(self):
+		self.logger = logging.getLogger('cr-smart-home')
+
 	#---------------------------------------------------------------------------# 
 	# Debug
 	#---------------------------------------------------------------------------# 
@@ -33,18 +37,17 @@ class Log:
 	#---------------------------------------------------------------------------# 
 	# SQL Query
 	#---------------------------------------------------------------------------# 			
-	def SQLQuery(self, sSQL):
-		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
-		cursor = db.cursor()
-	
+	def SQLQuery(self, sSQL):	
 		try:
+			db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+			cursor = db.cursor()
 			cursor.execute(sSQL)
 			db.commit()
 		except MySQLdb.Error, e:
 			db.rollback()
-			logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
+			self.logger.error("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
 		except:
-			logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
+			self.logger.error("Unexpected error: %s" % (sys.exc_info()[0]))
 		finally:
 			cursor.close()
 			db.close()
