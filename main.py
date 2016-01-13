@@ -5,6 +5,7 @@ from datetime import datetime
 from Weather import Weather
 from Sun import Sun
 from Lamp import Lamp
+from Sensor import Sensor
 from Config import Config
 from Log import Log
 from Upgrade import Upgrade
@@ -35,6 +36,7 @@ def main():
 	weather = Weather()
 	sun = Sun()
 	lamp = Lamp()
+	sensor = Sensor()
 	
 	log.info('Server', 'System is running in %s (Lat=%f, Long=%f)' % (weather.city, sun.latitude, sun.longitude))
 	bStartUp = True
@@ -51,8 +53,12 @@ def main():
 		if (datetime.now().minute == 0 or bStartUp == True):
 			sun.UpdateDb()
 	
-		#Loop through all lamps
+		# Lamp schedule
 		lamp.Schedule()
+
+		# Sensors
+		if (datetime.now().minute % 10 == 0 or bStartUp):
+			sensor.readAll()
 		
 		#Reset startup bool
 		bStartUp = False

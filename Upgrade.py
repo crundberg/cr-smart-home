@@ -13,7 +13,7 @@ class Upgrade:
 	def __init__(self):
 		self.log = Log()
 		self.error = 0
-		self.Version = "v0.1.5"
+		self.Version = "v0.1.6"
 	
 
 	#---------------------------------------------------------------------------# 
@@ -88,6 +88,17 @@ class Upgrade:
 			# Upgrade to v0.1.5
 			if (cmp(self.VersionToInt("v0.1.5"), self.VersionToInt(dbVersion)) > 0):				
 				self.SQLQuery("INSERT INTO `ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES (NULL, 'SunriseOffset', '0'), (NULL, 'SunsetOffset', '0');")
+
+			# Upgrade to v0.1.6
+			if (cmp(self.VersionToInt("v0.1.6"), self.VersionToInt(dbVersion)) > 0):				
+				self.SQLQuery("CREATE TABLE `ha_sensors` (`SensorId` int(11) NOT NULL, `SensorRoomId` int(11) DEFAULT NULL, `SensorName` varchar(250) NOT NULL, `SensorType` varchar(250) NOT NULL, `SensorGPIO` int(11) DEFAULT NULL, `SensorSerialNo` varchar(250) NOT NULL, `SensorOrder` int(11) NOT NULL DEFAULT '100') ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;")
+				self.SQLQuery("CREATE TABLE `ha_sensors_log` (`LogId` int(11) NOT NULL, `LogSensorId` int(11) NOT NULL, `LogDate` datetime NOT NULL, `LogValue1` decimal(6,2) DEFAULT NULL, `LogValue2` decimal(6,2) DEFAULT NULL, `LogValue3` decimal(6,2) DEFAULT NULL, `LogValue4` decimal(6,2) DEFAULT NULL, `LogValue5` decimal(6,2) DEFAULT NULL) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;")
+				self.SQLQuery("ALTER TABLE `ha_sensors` ADD PRIMARY KEY (`SensorId`), ADD KEY `SensorRoomId` (`SensorRoomId`);")
+				self.SQLQuery("ALTER TABLE `ha_sensors_log` ADD PRIMARY KEY (`LogId`), ADD KEY `LogSensorId` (`LogSensorId`);")
+				self.SQLQuery("ALTER TABLE `ha_sensors` MODIFY `SensorId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;")
+				self.SQLQuery("ALTER TABLE `ha_sensors_log` MODIFY `LogId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=46;")
+				self.SQLQuery("ALTER TABLE `ha_sensors` ADD CONSTRAINT `ha_sensors_ibfk_1` FOREIGN KEY (`SensorRoomId`) REFERENCES `ha_rooms` (`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION;")
+				self.SQLQuery("ALTER TABLE `ha_sensors_log` ADD CONSTRAINT `ha_sensors_log_ibfk_1` FOREIGN KEY (`LogSensorId`) REFERENCES `ha_sensors` (`SensorId`) ON DELETE CASCADE ON UPDATE NO ACTION;")
 			
 			# Upgrade finished
 			if (self.error == 0):

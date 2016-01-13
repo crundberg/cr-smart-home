@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Värd: localhost
--- Tid vid skapande: 30 dec 2015 kl 22:54
+-- Tid vid skapande: 13 jan 2016 kl 13:28
 -- Serverversion: 5.5.44-0+deb8u1
 -- PHP-version: 5.6.14-0+deb8u1
 
@@ -114,12 +114,45 @@ CREATE TABLE `ha_log` (
 -- Tabellstruktur `ha_rooms`
 --
 
-CREATE TABLE IF NOT EXISTS `ha_rooms` (
+CREATE TABLE `ha_rooms` (
 `RoomId` int(11) NOT NULL,
   `RoomName` varchar(255) NOT NULL,
   `RoomDescription` text NOT NULL,
   `RoomOrder` int(11) NOT NULL DEFAULT '100'
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `ha_sensors`
+--
+
+CREATE TABLE `ha_sensors` (
+`SensorId` int(11) NOT NULL,
+  `SensorRoomId` int(11) DEFAULT NULL,
+  `SensorName` varchar(250) NOT NULL,
+  `SensorType` varchar(250) NOT NULL,
+  `SensorGPIO` int(11) DEFAULT NULL,
+  `SensorSerialNo` varchar(250) NOT NULL,
+  `SensorOrder` int(11) NOT NULL DEFAULT '100'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellstruktur `ha_sensors_log`
+--
+
+CREATE TABLE `ha_sensors_log` (
+`LogId` int(11) NOT NULL,
+  `LogSensorId` int(11) NOT NULL,
+  `LogDate` datetime NOT NULL,
+  `LogValue1` decimal(6,2) DEFAULT NULL,
+  `LogValue2` decimal(6,2) DEFAULT NULL,
+  `LogValue3` decimal(6,2) DEFAULT NULL,
+  `LogValue4` decimal(6,2) DEFAULT NULL,
+  `LogValue5` decimal(6,2) DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -138,7 +171,7 @@ CREATE TABLE `ha_settings` (
 --
 
 INSERT INTO `ha_settings` (`SettingId`, `SettingName`, `SettingValue`) VALUES
-(1, 'Version', 'v0.1.4'),
+(1, 'Version', 'v0.1.6'),
 (2, 'City', 'Gothenburg'),
 (3, 'Latitude', '57.70887'),
 (4, 'Longitude', '11.97456'),
@@ -214,6 +247,18 @@ ALTER TABLE `ha_rooms`
  ADD PRIMARY KEY (`RoomId`);
 
 --
+-- Index för tabell `ha_sensors`
+--
+ALTER TABLE `ha_sensors`
+ ADD PRIMARY KEY (`SensorId`), ADD KEY `SensorRoomId` (`SensorRoomId`);
+
+--
+-- Index för tabell `ha_sensors_log`
+--
+ALTER TABLE `ha_sensors_log`
+ ADD PRIMARY KEY (`LogId`), ADD KEY `LogSensorId` (`LogSensorId`);
+
+--
 -- Index för tabell `ha_settings`
 --
 ALTER TABLE `ha_settings`
@@ -266,6 +311,16 @@ MODIFY `SettingId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 ALTER TABLE `ha_rooms`
 MODIFY `RoomId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 --
+-- AUTO_INCREMENT för tabell `ha_sensors`
+--
+ALTER TABLE `ha_sensors`
+MODIFY `SensorId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+--
+-- AUTO_INCREMENT för tabell `ha_sensors_log`
+--
+ALTER TABLE `ha_sensors_log`
+MODIFY `LogId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+--
 -- AUTO_INCREMENT för tabell `ha_users`
 --
 ALTER TABLE `ha_users`
@@ -290,3 +345,15 @@ ADD CONSTRAINT `ha_lamp_objects_ibfk_1` FOREIGN KEY (`LampRoomId`) REFERENCES `h
 --
 ALTER TABLE `ha_lamp_schedule`
 ADD CONSTRAINT `ha_lamp_schedule_ibfk_1` FOREIGN KEY (`ScheduleLampId`) REFERENCES `ha_lamp_objects` (`LampId`) ON DELETE CASCADE;
+
+--
+-- Restriktioner för tabell `ha_sensors`
+--
+ALTER TABLE `ha_sensors`
+ADD CONSTRAINT `ha_sensors_ibfk_1` FOREIGN KEY (`SensorRoomId`) REFERENCES `ha_rooms` (`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION;
+
+--
+-- Restriktioner för tabell `ha_sensors_log`
+--
+ALTER TABLE `ha_sensors_log`
+ADD CONSTRAINT `ha_sensors_log_ibfk_1` FOREIGN KEY (`LogSensorId`) REFERENCES `ha_sensors` (`SensorId`) ON DELETE CASCADE ON UPDATE NO ACTION;

@@ -30,6 +30,9 @@ sudo apt-get install python-mysqldb
 sudo apt-get install apache2
 sudo apt-get install php5 php5-curl php5-mysql libapache2-mod-php5
 sudo apt-get install python-dev libboost-python-dev python-pip
+sudo apt-get install build-essential python-openssl
+
+sudo apt-get install python3-w1thermsensor
 sudo pip install Flask
 sudo pip install flask-httpauth
 
@@ -43,6 +46,11 @@ sudo pip install pi_switch
 cd /home/pi/Documents
 git clone https://github.com/lexruee/pi-switch-python.git
 cd pi-switch-python
+sudo python setup.py install
+
+cd /home/pi/Documents
+git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+cd Adafruit_Python_DHT
 sudo python setup.py install
 ```
 

@@ -91,3 +91,17 @@ lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc5.d/S04crsmarthome -> ../init.d/cr
 lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc6.d/K01crsmarthome -> ../init.d/crsmarthome
 
 ```
+
+## 2016-01-13
+Added support for temperaturesensors. Install Adafruit DHT library with the follwing commands
+```
+sudo apt-get update
+sudo apt-get install build-essential python-dev python-openssl
+
+cd /home/pi/Documents
+git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+cd Adafruit_Python_DHT
+sudo python setup.py install
+
+sudo apt-get install python3-w1thermsensor
+```
