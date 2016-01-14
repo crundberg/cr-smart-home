@@ -4,7 +4,7 @@ import MySQLdb
 import Adafruit_DHT
 from Config import Config
 from Log import Log
-from w1thermsensor import W1ThermSensor
+from w1thermsensor import W1ThermSensor, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 class Sensor:
 	#---------------------------------------------------------------------------# 
@@ -28,10 +28,16 @@ class Sensor:
 	#---------------------------------------------------------------------------# 
 	# DSxx sensors
 	#---------------------------------------------------------------------------# 
-	def DS(self, Id):
+	def DS(self, Id, SensorType, SerialNo):
 
-		sensor = W1ThermSensor()
-		temperature = sensor.get_temperature()
+		try:
+			sensor = W1ThermSensor(SensorType, SerialNo)
+			temperature = sensor.get_temperature()
+		except (UnsupportedUnitError, NoSensorFoundError, SensorNotReadyError) as e:
+			self.log.error('Server', 'Sensor Error: %s' % str(e).replace("'", '"'))
+			return
+		
+		
 		
 		if temperature is not None:
 			self.SQLQuery("INSERT INTO ha_sensors_log (LogSensorId, LogDate, LogValue1) VALUES ('%s', NOW(), '%.2f')" % (Id, temperature))
@@ -66,8 +72,14 @@ class Sensor:
 					self.DHT(dbId, Adafruit_DHT.DHT22, dbGPIO)
 				elif (dbType == "AM2302"):
 					self.DHT(dbId, Adafruit_DHT.AM2302, dbGPIO)
-				elif (dbType == "DS18S20" or dbType == "DS1822" or dbType == "DS18B20" or dbType == "MAX31850K"):
-					self.DS(dbId)
+				elif (dbType == "DS18S20"):
+					self.DS(dbId, W1ThermSensor.THERM_SENSOR_DS18S20, dbSerialNo)
+				elif (dbType == "DS1822"):
+					self.DS(dbId, W1ThermSensor.THERM_SENSOR_DS1822, dbSerialNo)
+				elif (dbType == "DS18B20"):
+					self.DS(dbId, W1ThermSensor.THERM_SENSOR_DS18B20, dbSerialNo)
+				elif (dbType == "MAX31850K"):
+					self.DS(dbId, W1ThermSensor.THERM_SENSOR_MAX31850K, dbSerialNo)
 				else:
 					self.log.warning('Server', 'Unknown sensor type for %s (%s)' % (dbName, dbType))
 		except MySQLdb.Error, e:

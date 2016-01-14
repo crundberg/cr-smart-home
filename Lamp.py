@@ -43,7 +43,7 @@ class Lamp:
 		dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 		cursorPowerOff = dbPowerOff.cursor()
 	
-		sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = %d, LampPowerOnMan = %d WHERE LampId = %d"
+		sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = %s, LampPowerOnMan = %s WHERE LampId = %s"
 	
 		try:
 			cursorPowerOff.execute(sSQL, (nPowerOn, nPowerOn, nId))
