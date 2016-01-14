@@ -24,7 +24,7 @@
 
 4. Get the device serial number
   When you have listed the directory in devices you can see the sensors serial number, replace xxxx with it.
-  For example 28-0000072f3122.
+  For example `28-0000072f3122`.
   ```
   cd /sys/bus/w1/devices
   ls
@@ -39,4 +39,4 @@
   ```
 
 5. Add sensor in webgui
-  Open webgui and click Add -> Sensors. Fill the form, write 0 on GPIO and enter the  serial number from above.
+  Open webgui and click Add -> Sensors. Fill the form, write 0 on GPIO and enter the serial number from above. For example `0000072f3122`
