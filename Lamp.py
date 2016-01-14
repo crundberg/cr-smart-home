@@ -43,10 +43,10 @@ class Lamp:
 		dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 		cursorPowerOff = dbPowerOff.cursor()
 	
-		sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = %d, LampPowerOnMan = %d WHERE LampId = %d" % (nPowerOn, nPowerOn, nId)
+		sSQL = "UPDATE ha_lamp_objects SET LampPowerOn = %d, LampPowerOnMan = %d WHERE LampId = %d"
 	
 		try:
-			cursorPowerOff.execute(sSQL)
+			cursorPowerOff.execute(sSQL, (nPowerOn, nPowerOn, nId))
 			dbPowerOff.commit()
 		except MySQLdb.Error, e:
 			dbPowerOff.rollback()
@@ -173,7 +173,7 @@ class Lamp:
 		
 		# Select lamp from database
 		try:
-			cursor.execute("SELECT LampName, LampCmdOn, LampCmdOff FROM ha_lamp_objects WHERE LampId = %s" % Id)
+			cursor.execute("SELECT LampName, LampCmdOn, LampCmdOff FROM ha_lamp_objects WHERE LampId = %s", (Id))
 			results = cursor.fetchone()
 		
 			#Move result to variables
@@ -199,7 +199,7 @@ class Lamp:
 			
 		# Update database
 		try:
-			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampId = %s" % (PowerOn, Id))
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampId = %s", (PowerOn, Id))
 			db.commit()
 		except MySQLdb.Error, e:
 			db.rollback()
@@ -223,7 +223,7 @@ class Lamp:
 		
 		try:
 			# Select lamps from database
-			cursor.execute("SELECT LampId, LampName, LampCmdOn, LampCmdOff, RoomName FROM ha_lamp_objects LEFT JOIN ha_rooms ON RoomId=LampRoomId WHERE LampRoomId = %s" % Id)
+			cursor.execute("SELECT LampId, LampName, LampCmdOn, LampCmdOff, RoomName FROM ha_lamp_objects LEFT JOIN ha_rooms ON RoomId=LampRoomId WHERE LampRoomId = %s", (Id))
 			results = cursor.fetchall()
 		
 			# Loop result from database
@@ -258,7 +258,7 @@ class Lamp:
 			
 		#Update database
 		try:
-			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s" % (PowerOn, Id))
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s", (PowerOn, Id))
 			db.commit()
 		except MySQLdb.Error, e:
 			db.rollback()
@@ -314,7 +314,7 @@ class Lamp:
 			
 		#Update database
 		try:
-			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampIncInAll = 1" % PowerOn)
+			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampIncInAll = 1", (PowerOn))
 			db.commit()
 		except MySQLdb.Error, e:
 			db.rollback()

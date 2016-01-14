@@ -32,7 +32,7 @@ sudo apt-get install php5 php5-curl php5-mysql libapache2-mod-php5
 sudo apt-get install python-dev libboost-python-dev python-pip
 sudo apt-get install build-essential python-openssl
 
-sudo apt-get install python3-w1thermsensor
+sudo apt-get install python-w1thermsensor
 sudo pip install Flask
 sudo pip install flask-httpauth
 

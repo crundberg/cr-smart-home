@@ -28,12 +28,12 @@ class Sensor:
 	#---------------------------------------------------------------------------# 
 	# DSxx sensors
 	#---------------------------------------------------------------------------# 
-	def DS(self, Id, SensorType, GPIO):
+	def DS(self, Id):
 
 		sensor = W1ThermSensor()
 		temperature = sensor.get_temperature()
 		
-		if humidity is not None and temperature is not None:
+		if temperature is not None:
 			self.SQLQuery("INSERT INTO ha_sensors_log (LogSensorId, LogDate, LogValue1) VALUES ('%s', NOW(), '%.2f')" % (Id, temperature))
 		else:
 			self.log.warning('Server', 'Failed to get reading. Try again!')

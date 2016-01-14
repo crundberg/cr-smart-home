@@ -76,7 +76,7 @@ def get_lamp(lamp_id):
 
 	try:
 		#Execure SQL-Query
-		cursor.execute("SELECT * FROM ha_lamp_objects WHERE LampId=%d" % lamp_id)
+		cursor.execute("SELECT * FROM ha_lamp_objects WHERE LampId=%d", lamp_id)
 		results = cursor.fetchall()
 	
 		#Loop result from database
@@ -282,7 +282,7 @@ def login():
 	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursor = db.cursor()
 	
-	cursor.execute("SELECT SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512) FROM ha_users WHERE UserName = '" + request.json['username'] + "' AND SHA2(CONCAT(UserPassword, '" + request.user_agent.string + "'), 512) = SHA2(CONCAT(SHA2(CONCAT('" + request.json['password'] + "', UserSalt), 512), '" + request.user_agent.string + "'), 512)")
+	cursor.execute("SELECT SHA2(CONCAT(%s, UserSalt), 512) FROM ha_users WHERE UserName=%s AND SHA2(CONCAT(UserPassword, %s), 512) = SHA2(CONCAT(SHA2(CONCAT(%s, UserSalt), 512), %s), 512)", (request.json['password'], request.json['username'], request.user_agent.string, request.json['password'], request.user_agent.string))
 	data = cursor.fetchone()
     
 	if data is None:
@@ -304,7 +304,7 @@ def verify_password(username, password):
 	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 	cursor = db.cursor()
 	
-	cursor.execute("SELECT * FROM ha_users WHERE UserName = '" + username + "' AND SHA2(CONCAT(UserPassword, '" + request.user_agent.string + "'), 512) = '" + password + "'")
+	cursor.execute("SELECT * FROM ha_users WHERE UserName = %s AND SHA2(CONCAT(UserPassword, %s), 512) = %s", (username, request.user_agent.string, password))
 	data = cursor.fetchone()
     
 	if data is None:

@@ -93,7 +93,7 @@ lrwxrwxrwx 1 root root 21 Jan 12 13:15 /etc/rc6.d/K01crsmarthome -> ../init.d/cr
 ```
 
 ## 2016-01-13
-Added support for temperaturesensors. Install Adafruit DHT library with the follwing commands
+Added support for temperature sensors. Install Adafruit DHT library with the follwing commands
 ```
 sudo apt-get update
 sudo apt-get install build-essential python-dev python-openssl
@@ -103,5 +103,8 @@ git clone https://github.com/adafruit/Adafruit_Python_DHT.git
 cd Adafruit_Python_DHT
 sudo python setup.py install
 
-sudo apt-get install python3-w1thermsensor
+sudo apt-get install python-w1thermsensor
 ```
+
+## 2016-01-14
+Added support for more temperature sensors. See [how to install one wire sensors](https://github.com/crundberg/cr-smart-home/tree/master/Docs/InstallOneWireSensor.md)
