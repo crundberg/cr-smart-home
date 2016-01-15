@@ -171,6 +171,7 @@ def powerall():
 def get_dashboard():
 	rooms = []
 	lamps = []
+	sensors = []
 	sun = []
 	weather = []
 
@@ -179,38 +180,34 @@ def get_dashboard():
 	cursor = db.cursor()
 
 	try:
-		#Execure SQL-Query
+		#Execute SQL-Query
 		cursor.execute("SELECT t1.*, IFNULL(t2.RoomName, 'Lamps'), IFNULL(t2.RoomDescription, ''), IFNULL(t2.RoomOrder, 1000) FROM ha_lamp_objects t1 LEFT JOIN ha_rooms t2 ON LampRoomId = RoomId ORDER BY -LampRoomId DESC, RoomOrder ASC, LampOrder ASC")
 		results = cursor.fetchall()
 
-		nLastRoom = 0
+		nCount = 0
 		nLampCount = 0
 		room = collections.OrderedDict()
 		
 		#Loop result from database
 		for row in results:
-			if (nLastRoom == 0):
-				room['Id'] = row[1]
-				room['Name'] = row[10]
-				room['Description'] = row[11]
-				room['Order'] = row[12]
-				nLastRoom = row[1]
-			
-			if (nLastRoom <> row[1]):
-				room['LampCount'] = nLampCount
-				room['Lamps'] = lamps
-				rooms.append(room)
-				
-				room = collections.OrderedDict()
-				room['Id'] = row[1]
-				room['Name'] = row[10]
-				room['Description'] = row[11]
-				room['Order'] = row[12]
-				nLastRoom = row[1]
-				nLampCount = 0
-				
-				lamps = []
-						
+			isLastRow = (nCount+1 == cursor.rowcount)
+
+			# Add "Entire room" button on top if it's first in the room
+			if (row[1] is not None and nLampCount == 0):
+				d = collections.OrderedDict()
+				d['Id'] = -1
+				d['RoomId'] = results[nCount+1][1]
+				d['Name'] = "Entire room"
+				d['Type'] = ""
+				d['PowerOn'] = 0
+				d['PowerOnMan'] = 0
+				d['CmdOn'] = "EntireRoom"
+				d['CmdOff'] = "EntireRoom"
+				d['IncInAll'] = 1
+				d['Order'] = 0
+				lamps.append(d)
+				nLampCount = nLampCount+1
+	
 			#Move database row to variables
 			d = collections.OrderedDict()
 			d['Id'] = row[0]
@@ -226,13 +223,41 @@ def get_dashboard():
 			lamps.append(d)
 			
 			nLampCount = nLampCount+1
+
+			# Last row or next row is a new room
+			if (isLastRow or row[1] <> results[nCount+1][1]):
+				room = collections.OrderedDict()
+				room['Id'] = row[1]
+				room['Name'] = row[10]
+				room['Description'] = row[11]
+				room['Order'] = row[12]
+				room['LampCount'] = nLampCount
+				room['Lamps'] = lamps
+				rooms.append(room)
+
+				lamps = []
+				nLampCount = 0
 			
-		if cursor.rowcount > 0:
-			room['LampCount'] = nLampCount
-			room['Lamps'] = lamps
-			rooms.append(room)
-			
-		#Execure SQL-Query
+			nCount = nCount+1
+
+		#Execute SQL-Query
+		cursor.execute("SELECT SensorId, SensorRoomId, SensorName, SensorType, SensorOrder, LogDate, LogValue1, LogValue2 FROM (SELECT * FROM ha_sensors_log ORDER BY LogDate DESC) t1 LEFT JOIN ha_sensors ON SensorId = LogSensorId LEFT JOIN ha_rooms ON RoomId = SensorRoomId GROUP BY LogSensorId")
+		results = cursor.fetchall()
+		
+		#Move database row to variables
+		for row in results:
+			d = collections.OrderedDict()
+			d['Id'] = row[0]
+			d['RoomId'] = row[1]
+			d['Name'] = row[2]
+			d['Type'] = row[3]
+			d['Order'] = row[4]
+			d['LogDate'] = row[5].strftime("%Y-%m-%d %H:%M:%S")
+			d['LogValue1'] = "%s" % row[6]
+			d['LogValue2'] = "%s" % row[7]
+			sensors.append(d)
+
+		#Execute SQL-Query
 		cursor.execute("SELECT * FROM ha_data WHERE DataName='Sun'")
 		results = cursor.fetchone()
 	
@@ -245,7 +270,7 @@ def get_dashboard():
 		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
 		sun.append(d)
 		
-		#Execure SQL-Query
+		#Execute SQL-Query
 		cursor.execute("SELECT * FROM ha_data WHERE DataName='Weather'")
 		results = cursor.fetchone()
 	

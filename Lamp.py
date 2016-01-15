@@ -39,7 +39,7 @@ class Lamp:
 	#---------------------------------------------------------------------------# 
 	def LampPower(self, nId, sName, nPowerOn, sCmd):
 		
-		#Update database
+		# Update database
 		dbPowerOff = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 		cursorPowerOff = dbPowerOff.cursor()
 	
@@ -56,13 +56,13 @@ class Lamp:
 		finally:
 			dbPowerOff.close()
 	
-		#Log
+		# Log
 		if (nPowerOn == 1):
 			self.log.info('Server', 'Sending power on to %s (Cmd: %s)' % (sName, sCmd))
 		else:
 			self.log.info('Server', 'Sending power off to %s (Cmd: %s)' % (sName, sCmd))
 	
-		#Send command to Nexa Power Switch
+		# Send command to Nexa Power Switch
 		self.LampCmd(sCmd)
 	
 	
@@ -70,15 +70,16 @@ class Lamp:
 	# Schedule
 	#---------------------------------------------------------------------------# 
 	def Schedule(self):
-		#DateTime
+		# DateTime
 		dtNow = datetime.datetime.now()
 		dtDateNow = datetime.datetime.now().date()
 		nWeekdayNow = datetime.datetime.today().weekday()
 		
-		#Sun
+		# Sun
 		bSunIsDown = self.sun.sunIsDown();
 		
-		#Init variables
+		# Init variables
+		nCount = 0
 		dbId = 0
 		dbName = ''
 		dbPowerOn = 0
@@ -93,25 +94,22 @@ class Lamp:
 		#Update database
 		self.SQLQuery("Update ha_data SET DataText='OK', DataStatus=200, DataLastUpdated=NOW() WHERE DataName='Schedule'");
 	
-		#Connect to MySQL
+		# Connect to MySQL
 		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
 		cursor = db.cursor()
 	
 		try:
-			#Execure SQL-Query
+			# Execure SQL-Query
 			cursor.execute("CALL GetLampSchedulesSimple")
 			results = cursor.fetchall()
 		
-			#Loop result from database
+			# Loop result from database
 			for row in results:
-				#Continue if object were started last loop
+				# Continue if object were started last loop
 				if (dbId == row[0] and nPowerOn == 1):
 					continue
-				#Last object shouldn't be on
-				elif (dbId > 0 and dbId <> row[0] and nPowerOn == 0 and dbPowerOn <> 0 and dbMode <> 0):
-					self.LampPower(dbId, dbName, 0, dbCmdOff)
 					
-				#Move database row to variables
+				# Move database row to variables
 				dbId = row[0]
 				dbName = row[1]
 				dbPowerOn = row[2]
@@ -121,8 +119,10 @@ class Lamp:
 				dbOn = row[6]
 				dbOff = row[7]
 				dbMode = row[8]
+				nPowerOn = 0
+				isLastRow = (nCount+1 == cursor.rowcount)
 				
-				#Calculate DateTime for start and stop
+				# Calculate DateTime for start and stop
 				if (nWeekdayNow == dbWeekday):
 					sStart = '%s %s' % (dtDateNow, dbOn)
 					sStop = '%s %s' % (dtDateNow, dbOff)
@@ -130,36 +130,35 @@ class Lamp:
 					sStart = '%s %s' % (dtDateNow - datetime.timedelta(days=1), dbOn)
 					sStop = '%s %s' % (dtDateNow - datetime.timedelta(days=1), dbOff)
 			
-				#Convert string to datetime
+				# Convert string to datetime
 				dtStart = datetime.datetime.strptime(sStart, '%Y-%m-%d %H:%M:%S')
 				dtStop = datetime.datetime.strptime(sStop, '%Y-%m-%d %H:%M:%S')
 			
-				#Add extra day if stop date is over midnight
+				# Add extra day if stop date is over midnight
 				if (dtStart > dtStop):
 					dtStop += datetime.timedelta(days=1)
 			
-				#Start object
+				# Power on object
 				if (dtNow > dtStart and dtNow < dtStop and (dbMode == 1 or (dbMode == 2 and bSunIsDown))):
 					nPowerOn = 1
 		
 					if (dbPowerOn <> 1):
 						self.LampPower(dbId, dbName, 1, dbCmdOn)
-				else:
-					nPowerOn = 0
-				
-			#Power off last object if not started
-			if (dbId > 0 and nPowerOn == 0 and dbPowerOn <> 0 and dbMode <> 0):
-				self.LampPower(dbId, dbName, 0, dbCmdOff)
-	
+
+				# Power off object
+				elif ((isLastRow or (not isLastRow and dbId <> results[nCount+1][0])) and dbPowerOn <> 0 and dbMode <> 0):
+					self.LampPower(dbId, dbName, 0, dbCmdOff)
+
+				nCount = nCount + 1
 		except MySQLdb.Error, e:
-			#Log exceptions
+			# Log exceptions
 			try:
 				self.log.error('Server', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
 				self.log.error('Server', 'MySQL Error: %s' % str(e))
 		finally:
-			#Close database connection
+			# Close database connection
 			cursor.close()
 			db.close()
 			
@@ -176,7 +175,7 @@ class Lamp:
 			cursor.execute("SELECT LampName, LampCmdOn, LampCmdOff FROM ha_lamp_objects WHERE LampId = %s", (Id))
 			results = cursor.fetchone()
 		
-			#Move result to variables
+			# Move result to variables
 			dbName = results[0]
 			dbCmdOn = results[1]
 			dbCmdOff = results[2]
@@ -249,14 +248,14 @@ class Lamp:
 				self.log.info('API', 'Sending power off to room %s...' % dbRoomName)
 	
 		except MySQLdb.Error, e:
-			#Log exceptions
+			# Log exceptions
 			try:
 				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
 				self.log.error('API', 'MySQL Error: %s' % str(e))
 			
-		#Update database
+		# Update database
 		try:
 			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampRoomId = %s", (PowerOn, Id))
 			db.commit()
@@ -266,7 +265,7 @@ class Lamp:
 		except:
 			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
 		finally:
-			#Close database connection
+			# Close database connection
 			cursor.close()
 			db.close()
 		
@@ -305,14 +304,14 @@ class Lamp:
 				self.log.info('API', 'Sending power off to all lamps')
 	
 		except MySQLdb.Error, e:
-			#Log exceptions
+			# Log exceptions
 			try:
 				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
 	
 			except IndexError:
 				self.log.error('API', 'MySQL Error: %s' % str(e))
 			
-		#Update database
+		# Update database
 		try:
 			cursor.execute("UPDATE ha_lamp_objects SET LampPowerOnMan = %s WHERE LampIncInAll = 1", (PowerOn))
 			db.commit()
@@ -322,7 +321,7 @@ class Lamp:
 		except:
 			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
 		finally:
-			#Close database connection
+			# Close database connection
 			cursor.close()
 			db.close()
 		
