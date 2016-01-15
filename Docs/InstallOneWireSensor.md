@@ -1,4 +1,4 @@
-# Install on wire temperature sensor
+# Install one wire temperature sensor
 
 ## Supported sensors
 - DS18S20
@@ -32,7 +32,7 @@
   cat w1_slave
   ```
   
-  If everything works properly, you will see YES on the first line and the temperature in thousandths of degree celsius on the second line.
+  If everything works properly, you will see YES on the first line and the temperature in 1/000 degrees °C on the second line.
   ```
   59 01 4b 46 7f ff 07 10 a2 : crc=a2 YES
   59 01 4b 46 7f ff 07 10 a2 t=21562
