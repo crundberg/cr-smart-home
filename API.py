@@ -180,12 +180,15 @@ def get_dashboard():
 	cursor = db.cursor()
 
 	try:
-		#Execute SQL-Query
+		#---------------------------------------------------------------------------# 
+		# Rooms and Lamps
+		#---------------------------------------------------------------------------#
 		cursor.execute("SELECT t1.*, IFNULL(t2.RoomName, 'Lamps'), IFNULL(t2.RoomDescription, ''), IFNULL(t2.RoomOrder, 1000) FROM ha_lamp_objects t1 LEFT JOIN ha_rooms t2 ON LampRoomId = RoomId ORDER BY -LampRoomId DESC, RoomOrder ASC, LampOrder ASC")
 		results = cursor.fetchall()
 
 		nCount = 0
 		nLampCount = 0
+		nLampsOn = 0
 		room = collections.OrderedDict()
 		
 		#Loop result from database
@@ -207,6 +210,7 @@ def get_dashboard():
 				d['Order'] = 0
 				lamps.append(d)
 				nLampCount = nLampCount+1
+				nLampsOn = 0
 	
 			#Move database row to variables
 			d = collections.OrderedDict()
@@ -222,6 +226,9 @@ def get_dashboard():
 			d['Order'] = row[9]
 			lamps.append(d)
 			
+			if (row[5] == 1):
+				nLampsOn = nLampsOn+1
+			
 			nLampCount = nLampCount+1
 
 			# Last row or next row is a new room
@@ -235,12 +242,19 @@ def get_dashboard():
 				room['Lamps'] = lamps
 				rooms.append(room)
 
+				# Update entire room to On if a lamps is powered on
+				if (row[1] is not None and nLampsOn > 0):
+					lamps[0]['PowerOn'] = 1
+					lamps[0]['PowerOnMan'] = 1
+
 				lamps = []
 				nLampCount = 0
 			
 			nCount = nCount+1
 
-		#Execute SQL-Query
+		#---------------------------------------------------------------------------# 
+		# Sensors
+		#---------------------------------------------------------------------------#
 		cursor.execute("SELECT SensorId, SensorRoomId, SensorName, SensorType, SensorOrder, LogDate, LogValue1, LogValue2 FROM (SELECT * FROM ha_sensors_log ORDER BY LogDate DESC) t1 LEFT JOIN ha_sensors ON SensorId = LogSensorId LEFT JOIN ha_rooms ON RoomId = SensorRoomId GROUP BY LogSensorId")
 		results = cursor.fetchall()
 		
@@ -254,10 +268,28 @@ def get_dashboard():
 			d['Order'] = row[4]
 			d['LogDate'] = row[5].strftime("%Y-%m-%d %H:%M:%S")
 			d['LogValue1'] = "%s" % row[6]
-			d['LogValue2'] = "%s" % row[7]
+			d['LogValue2'] = "%s" % row[7]			
+			d['LogLabel1'] = ""
+			d['LogLabel2'] = ""
+			d['LogUnit1'] = ""
+			d['LogUnit2'] = ""
+			
+			if (row[3] == "DHT11" or row[3] == "DHT22" or row[3] == "AM2302"):
+				d['LogValues'] = 2
+				d['LogLabel1'] = "Temperature"
+				d['LogLabel2'] = "Humidity"
+				d['LogUnit1'] = " *C"
+				d['LogUnit2'] = "%"
+			elif (row[3] == "DS18S20" or row[3] == "DS1822", row[3] == "DS18B20", row[3] == "MAX31850K"):
+				d['LogValues'] = 1
+				d['LogLabel1'] = "Temperature"
+				d['LogUnit1'] = " *C"
+			
 			sensors.append(d)
 
-		#Execute SQL-Query
+		#---------------------------------------------------------------------------# 
+		# Sun
+		#---------------------------------------------------------------------------#
 		cursor.execute("SELECT * FROM ha_data WHERE DataName='Sun'")
 		results = cursor.fetchone()
 	
@@ -270,7 +302,9 @@ def get_dashboard():
 		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
 		sun.append(d)
 		
-		#Execute SQL-Query
+		#---------------------------------------------------------------------------# 
+		# Weather
+		#---------------------------------------------------------------------------#
 		cursor.execute("SELECT * FROM ha_data WHERE DataName='Weather'")
 		results = cursor.fetchone()
 	
@@ -294,7 +328,7 @@ def get_dashboard():
 		cursor.close()
 		db.close()
 
-	return jsonify({'rooms': rooms, 'sun': sun, 'weather': weather})
+	return jsonify({'rooms': rooms, 'sensors': sensors, 'sun': sun, 'weather': weather})
 
 #---------------------------------------------------------------------------# 
 # Login
