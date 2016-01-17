@@ -199,7 +199,7 @@ def get_dashboard():
 			if (row[1] is not None and nLampCount == 0):
 				d = collections.OrderedDict()
 				d['Id'] = -1
-				d['RoomId'] = results[nCount+1][1]
+				d['RoomId'] = row[1]
 				d['Name'] = "Entire room"
 				d['Type'] = ""
 				d['PowerOn'] = 0
