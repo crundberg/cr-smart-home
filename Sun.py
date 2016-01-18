@@ -46,8 +46,8 @@ class Sun:
 	#---------------------------------------------------------------------------# 	
 	def sunIsUp(self):
 		now = datetime.datetime.now()
- 		sunrise = self.sunrise(now, self.latitude, self.longitude).timedelta(minutes=sunriseOffset)
- 		sunset = self.sunset(now, self.latitude, self.longitude).timedelta(minutes=sunsetOffset)
+ 		sunrise = self.sunrise(now, self.latitude, self.longitude) + datetime.timedelta(minutes=self.sunriseOffset)
+ 		sunset = self.sunset(now, self.latitude, self.longitude) + datetime.timedelta(minutes=self.sunsetOffset)
 		return (now > sunrise or now < sunset)
 		
 	#---------------------------------------------------------------------------# 

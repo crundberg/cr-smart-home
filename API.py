@@ -76,7 +76,7 @@ def get_lamp(lamp_id):
 
 	try:
 		#Execure SQL-Query
-		cursor.execute("SELECT * FROM ha_lamp_objects WHERE LampId=%d", lamp_id)
+		cursor.execute("SELECT * FROM ha_lamp_objects WHERE LampId=%s", lamp_id)
 		results = cursor.fetchall()
 	
 		#Loop result from database
@@ -84,19 +84,21 @@ def get_lamp(lamp_id):
 			#Move database row to variables
 			d = collections.OrderedDict()
 			d['Id'] = row[0]
-			d['Name'] = row[1]
-			d['Type'] = row[2]
-			d['PowerOn'] = row[3]
-			d['PowerOnMan'] = row[4]
-			d['CmdOn'] = row[5]
-			d['CmdOff'] = row[6]
+			d['RoomId'] = row[1]
+			d['Name'] = row[2]
+			d['Type'] = row[3]
+			d['PowerOn'] = row[4]
+			d['PowerOnMan'] = row[5]
+			d['CmdOn'] = row[6]
+			d['CmdOff'] = row[7]
+			d['IncInAll'] = row[8]
+			d['Order'] = row[9]
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
 			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
 		except IndexError:
 			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
-
 	finally:
 		#Close database connection
 		cursor.close()
@@ -382,4 +384,4 @@ def not_found(error):
 # Start app
 #---------------------------------------------------------------------------#
 if __name__ == "__main__":
-	app.run(host='0.0.0.0', port=5000, debug=False)
+	app.run(host='0.0.0.0', port=5000, debug=True)

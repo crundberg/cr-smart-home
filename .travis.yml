@@ -1,0 +1,34 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+services:
+  - mysql
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install python-mysqldb
+  - sudo apt-get install python-dev libboost-python-dev python-pip
+  - sudo apt-get install build-essential python-openssl
+  - sudo apt-get install python-w1thermsensor
+  - sudo pip install Flask
+  - sudo pip install flask-httpauth
+  - sudo pip install pi_switch
+
+  - cd ~/
+  - git clone git://git.drogon.net/wiringPi
+  - cd wiringPi
+  - ./build
+
+  - cd ~/
+  - git clone https://github.com/lexruee/pi-switch-python.git
+  - cd pi-switch-python
+  - sudo python setup.py install
+
+  - cd ~/
+  - git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+  - cd Adafruit_Python_DHT
+  - sudo python setup.py install
+
+  - mysql -u root mysql < /home/pi/Documents/cr-smart-home/tests/database.sql
+sudo: required
+script: nosetests tests/UnitTest.py
