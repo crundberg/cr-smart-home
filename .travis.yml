@@ -29,6 +29,6 @@ before_install:
   - cd Adafruit_Python_DHT
   - sudo python setup.py install
 
-  - mysql -u root mysql < /home/pi/Documents/cr-smart-home/tests/database.sql
+  - mysql -u root mysql < ~/tests/database.sql
 sudo: required
-script: nosetests tests/UnitTest.py
+script: nosetests ~/tests/UnitTest.py
