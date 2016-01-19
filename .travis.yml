@@ -1,3 +1,4 @@
+sudo: required
 language: python
 python:
   - "2.6"
@@ -27,7 +28,7 @@ before_install:
   #- git clone https://github.com/adafruit/Adafruit_Python_DHT.git
   #- cd Adafruit_Python_DHT
   #- sudo python setup.py install
-
-  - mysql -u root mysql < ~/tests/database.sql
-sudo: required
-script: nosetests ~/tests/UnitTest.py
+before_script:
+  - mysql -u root mysql < ~/cr-smart-home/tests/database.sql
+script:
+  - nosetests ~/cr-smart-home/tests/UnitTest.py
