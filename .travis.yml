@@ -7,10 +7,9 @@ services:
   - mysql
 before_install:
   - sudo apt-get update
-  - sudo apt-get install python2.7-mysqldb -y
   - sudo apt-get install python-dev libboost-python-dev python-pip -y
   - sudo apt-get install build-essential python-openssl -y
-  - sudo apt-get build-dep python-mysqldb -y
+  - sudo apt-get install libmysqlclient-dev -y
   - sudo pip install w1thermsensor
   - sudo pip install Flask
   - sudo pip install flask-httpauth
