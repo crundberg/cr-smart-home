@@ -14,21 +14,21 @@ before_install:
   - sudo pip install Flask
   - sudo pip install flask-httpauth
   
-  - cd ~/
   - git clone git://git.drogon.net/wiringPi
   - cd wiringPi
   - ./build
   
-  - cd ~/
+  - cd ..
   - git clone https://github.com/lexruee/pi-switch-python.git
   - cd pi-switch-python
   - sudo python setup.py install
 
-  #- cd ~/
+  #- cd ..
   #- git clone https://github.com/adafruit/Adafruit_Python_DHT.git
   #- cd Adafruit_Python_DHT
   #- sudo python setup.py install
-before_script:
-  - mysql -u root mysql < ~/crundberg/cr-smart-home/tests/database.sql
 script:
-  - nosetests tests/UnitTest.py
+  - cd ..
+  - cd cr-smart-home/tests
+  - mysql -u root mysql < database.sql
+  - nosetests UnitTest.py
