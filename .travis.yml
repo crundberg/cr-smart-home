@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install python-mysqldb
   - sudo apt-get install python-dev libboost-python-dev python-pip
   - sudo apt-get install build-essential python-openssl
-  - sudo apt-get install python-w1thermsensor
+  - sudo pip install w1thermsensor
   - sudo pip install Flask
   - sudo pip install flask-httpauth
   - sudo pip install pi_switch
