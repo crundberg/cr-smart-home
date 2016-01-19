@@ -28,5 +28,7 @@ before_install:
   #- cd Adafruit_Python_DHT
   #- sudo python setup.py install
 script:
+  - cd ..
+  - cd crundberg/cr-smart-home/tests
   - mysql -u root mysql < ~/tests/database.sql
   - nosetests ~/tests/UnitTest.py
