@@ -107,6 +107,7 @@ class Lamp:
 			for row in results:
 				# Continue if object were started last loop
 				if (dbId == row[0] and nPowerOn == 1):
+					nCount = nCount + 1
 					continue
 					
 				# Move database row to variables
