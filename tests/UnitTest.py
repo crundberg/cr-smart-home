@@ -1,6 +1,6 @@
 import unittest
 import datetime
-import Adafruit_DHT
+#import Adafruit_DHT
 import json
 import hashlib
 from base64 import b64encode
@@ -13,7 +13,7 @@ from Lamp import Lamp
 from Sensor import Sensor
 from Upgrade import Upgrade
 from Weather import Weather
-from w1thermsensor import W1ThermSensor, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
+#from w1thermsensor import W1ThermSensor, NoSensorFoundError, SensorNotReadyError, UnsupportedUnitError
 
 class CrSmartHomeTestCase(unittest.TestCase):
 
@@ -170,11 +170,11 @@ class CrSmartHomeTestCase(unittest.TestCase):
 		log.SQLQuery("INSERT INTO ha_data (DataId, DataName, DataText, DataStatus, DataLastUpdated) VALUES (9999, 'Test', 'Test', 200, NOW()) ON DUPLICATE KEY UPDATE DataText = VALUES(DataText), DataStatus = VALUES(DataStatus), DataLastUpdated = VALUES(DataLastUpdated)")
 
 	def test_Sensor(self):
-		sensor = Sensor()
+		#sensor = Sensor()
 		#sensor.DHT(1, Adafruit_DHT.DHT22, 9)
 		#sensor.DS(2, W1ThermSensor.THERM_SENSOR_DS18B20, "0000072f3122")
 		#sensor.readAll()
-		sensor.SQLQuery("INSERT INTO ha_data (DataId, DataName, DataText, DataStatus, DataLastUpdated) VALUES (9999, 'Test', 'Test', 200, NOW()) ON DUPLICATE KEY UPDATE DataText = VALUES(DataText), DataStatus = VALUES(DataStatus), DataLastUpdated = VALUES(DataLastUpdated)")
+		#sensor.SQLQuery("INSERT INTO ha_data (DataId, DataName, DataText, DataStatus, DataLastUpdated) VALUES (9999, 'Test', 'Test', 200, NOW()) ON DUPLICATE KEY UPDATE DataText = VALUES(DataText), DataStatus = VALUES(DataStatus), DataLastUpdated = VALUES(DataLastUpdated)")
 
 	def test_Sun(self):
 		sun = Sun()

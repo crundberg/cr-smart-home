@@ -23,10 +23,10 @@ before_install:
   - cd pi-switch-python
   - sudo python setup.py install
 
-  - cd ~/
-  - git clone https://github.com/adafruit/Adafruit_Python_DHT.git
-  - cd Adafruit_Python_DHT
-  - sudo python setup.py install
+  #- cd ~/
+  #- git clone https://github.com/adafruit/Adafruit_Python_DHT.git
+  #- cd Adafruit_Python_DHT
+  #- sudo python setup.py install
 
   - mysql -u root mysql < ~/tests/database.sql
 sudo: required
