@@ -10,16 +10,16 @@ before_install:
   - sudo apt-get install python-dev libboost-python-dev python-pip -y
   - sudo apt-get install build-essential python-openssl -y
   - sudo apt-get install libmysqlclient-dev -y
-  - pip install w1thermsensor
+  #- pip install w1thermsensor
   - pip install Flask
   - pip install flask-httpauth
   - pip install MySQL-python
   
-  - git clone git://git.drogon.net/wiringPi
-  - cd wiringPi
-  - ./build
+  #- git clone git://git.drogon.net/wiringPi
+  #- cd wiringPi
+  #- ./build
   
-  - pip install pi_switch
+  #- pip install pi_switch
   #- cd ..
   #- git clone https://github.com/lexruee/pi-switch-python.git
   #- cd pi-switch-python
