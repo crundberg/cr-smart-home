@@ -169,7 +169,7 @@ class CrSmartHomeTestCase(unittest.TestCase):
 		log.error("Test", "Error")
 		log.SQLQuery("INSERT INTO ha_data (DataId, DataName, DataText, DataStatus, DataLastUpdated) VALUES (9999, 'Test', 'Test', 200, NOW()) ON DUPLICATE KEY UPDATE DataText = VALUES(DataText), DataStatus = VALUES(DataStatus), DataLastUpdated = VALUES(DataLastUpdated)")
 
-	def test_Sensor(self):
+	#def test_Sensor(self):
 		#sensor = Sensor()
 		#sensor.DHT(1, Adafruit_DHT.DHT22, 9)
 		#sensor.DS(2, W1ThermSensor.THERM_SENSOR_DS18B20, "0000072f3122")
