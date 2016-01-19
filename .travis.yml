@@ -19,10 +19,11 @@ before_install:
   - cd wiringPi
   - ./build
   
-  - cd ..
-  - git clone https://github.com/lexruee/pi-switch-python.git
-  - cd pi-switch-python
-  - sudo python setup.py install
+  - pip install pi_switch
+  #- cd ..
+  #- git clone https://github.com/lexruee/pi-switch-python.git
+  #- cd pi-switch-python
+  #- sudo python setup.py install
 
   #- cd ..
   #- git clone https://github.com/adafruit/Adafruit_Python_DHT.git
