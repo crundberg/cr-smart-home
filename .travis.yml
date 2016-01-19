@@ -12,7 +12,11 @@ before_install:
   - sudo pip install w1thermsensor
   - sudo pip install Flask
   - sudo pip install flask-httpauth
-  - sudo pip install pi_switch
+  
+  - cd ~/
+  - git clone https://github.com/lexruee/pi-switch-python.git
+  - cd pi-switch-python
+  - sudo python setup.py install
 
   - cd ~/
   - git clone git://git.drogon.net/wiringPi
