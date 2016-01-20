@@ -13,7 +13,7 @@ class Upgrade:
 	def __init__(self):
 		self.log = Log()
 		self.error = 0
-		self.Version = "v0.1.6"
+		self.Version = "v0.1.7"
 	
 
 	#---------------------------------------------------------------------------# 
@@ -99,6 +99,10 @@ class Upgrade:
 				self.SQLQuery("ALTER TABLE `ha_sensors_log` MODIFY `LogId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=46;")
 				self.SQLQuery("ALTER TABLE `ha_sensors` ADD CONSTRAINT `ha_sensors_ibfk_1` FOREIGN KEY (`SensorRoomId`) REFERENCES `ha_rooms` (`RoomId`) ON DELETE SET NULL ON UPDATE NO ACTION;")
 				self.SQLQuery("ALTER TABLE `ha_sensors_log` ADD CONSTRAINT `ha_sensors_log_ibfk_1` FOREIGN KEY (`LogSensorId`) REFERENCES `ha_sensors` (`SensorId`) ON DELETE CASCADE ON UPDATE NO ACTION;")
+			
+			# Upgrade to v0.1.7
+			if (cmp(self.VersionToInt("v0.1.7"), self.VersionToInt(dbVersion)) > 0):	
+				self.SQLQuery("ALTER TABLE `ha_users` ADD `UserAdmin` INT(11) NOT NULL DEFAULT '1';")
 			
 			# Upgrade finished
 			if (self.error == 0):

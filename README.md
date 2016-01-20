@@ -1,6 +1,12 @@
 # CR Smart Home
 A Raspberry Pi home automation project to control Nexa remote switch.
 
+## Features
+- Control lamps manually via API or with schedule
+- Connect sensors to log temperature and humidity
+- Get sunset/sunrise for your city
+- Get weather from OpenWeatherMap
+
 ## Hardware
 - Raspberry Pi
 - RF Transmitter and Receiver 433 MHz ([Like this one](http://www.kjell.com/se/sortiment/el/elektronik/fjarrstyrning/sandar-och-mottagarmodul-433-mhz-p88905))
@@ -34,7 +40,6 @@ sudo apt-get install build-essential python-openssl
 sudo apt-get install python-w1thermsensor
 sudo pip install Flask
 sudo pip install flask-httpauth
-sudo pip install pi_switch
 
 cd /home/pi/Documents
 git clone git://git.drogon.net/wiringPi
