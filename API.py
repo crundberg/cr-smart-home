@@ -190,6 +190,7 @@ def powerall():
 @app.route("/ha/api/v1.0/dashboard", methods=['GET'])
 @auth.login_required
 def get_dashboard():
+	scenes = []
 	rooms = []
 	lamps = []
 	sensors = []
@@ -201,6 +202,23 @@ def get_dashboard():
 	cursor = db.cursor()
 
 	try:
+		#---------------------------------------------------------------------------# 
+		# Scenes
+		#---------------------------------------------------------------------------#
+		cursor.execute("SELECT * FROM ha_scenes ORDER BY SceneOrder ASC")
+		results = cursor.fetchall()
+	
+		#Loop result from database
+		for row in results:
+			#Move database row to variables
+			d = collections.OrderedDict()
+			d['Id'] = row[0]
+			d['Name'] = row[1]
+			d['Description'] = row[2]
+			d['Favorite'] = row[3]
+			d['Order'] = row[4]
+			scenes.append(d)
+	
 		#---------------------------------------------------------------------------# 
 		# Rooms and Lamps
 		#---------------------------------------------------------------------------#
@@ -349,7 +367,126 @@ def get_dashboard():
 		cursor.close()
 		db.close()
 
-	return jsonify({'rooms': rooms, 'sensors': sensors, 'sun': sun, 'weather': weather})
+	return jsonify({'scenes': scenes, 'rooms': rooms, 'sensors': sensors, 'sun': sun, 'weather': weather})
+	
+#---------------------------------------------------------------------------# 
+# Get all scenes
+#---------------------------------------------------------------------------#
+@app.route("/ha/api/v1.0/scenes", methods=['GET'])
+@auth.login_required
+def get_scenes():
+	scenes = []
+
+	#Connect to MySQL
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+	cursor = db.cursor()
+
+	try:
+		#Execure SQL-Query
+		cursor.execute("SELECT * FROM ha_scenes ORDER BY SceneOrder ASC")
+		results = cursor.fetchall()
+	
+		#Loop result from database
+		for row in results:
+			#Move database row to variables
+			d = collections.OrderedDict()
+			d['Id'] = row[0]
+			d['Name'] = row[1]
+			d['Description'] = row[2]
+			d['Favorite'] = row[3]
+			d['Order'] = row[4]
+			scenes.append(d)
+	except MySQLdb.Error, e:
+		#Log exceptions
+		try:
+			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
+		except IndexError:
+			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
+
+	finally:
+		#Close database connection
+		cursor.close()
+		db.close()
+
+	return jsonify({'scenes': scenes})
+	
+#---------------------------------------------------------------------------# 
+# Get all scenes marked as favorite
+#---------------------------------------------------------------------------#
+@app.route("/ha/api/v1.0/scenes/favorite", methods=['GET'])
+@auth.login_required
+def get_scenes_favorite():
+	scenes = []
+
+	#Connect to MySQL
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+	cursor = db.cursor()
+
+	try:
+		#Execure SQL-Query
+		cursor.execute("SELECT * FROM ha_scenes WHERE SceneFavorite=1 ORDER BY SceneOrder ASC")
+		results = cursor.fetchall()
+	
+		#Loop result from database
+		for row in results:
+			#Move database row to variables
+			d = collections.OrderedDict()
+			d['Id'] = row[0]
+			d['Name'] = row[1]
+			d['Description'] = row[2]
+			d['Favorite'] = row[3]
+			d['Order'] = row[4]
+			scenes.append(d)
+	except MySQLdb.Error, e:
+		#Log exceptions
+		try:
+			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
+		except IndexError:
+			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
+
+	finally:
+		#Close database connection
+		cursor.close()
+		db.close()
+
+	return jsonify({'scenes': scenes})
+	
+#---------------------------------------------------------------------------# 
+# Get one scene
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/scenes/<int:scene_id>', methods=['GET'])
+@auth.login_required
+def get_scene(scene_id):
+	#Connect to MySQL
+	db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+	cursor = db.cursor()
+
+	try:
+		#Execure SQL-Query
+		cursor.execute("SELECT * FROM ha_scenes WHERE SceneId=%s", scene_id)
+		results = cursor.fetchall()
+	
+		#Loop result from database
+		for row in results:
+			#Move database row to variables
+			d = collections.OrderedDict()
+			d['Id'] = row[0]
+			d['Name'] = row[1]
+			d['Description'] = row[2]
+			d['Favorite'] = row[3]
+			d['Order'] = row[4]
+	except MySQLdb.Error, e:
+		#Log exceptions
+		try:
+			return make_response(jsonify({'MySQL-Error': e.args[1]}), 500)
+		except IndexError:
+			return make_response(jsonify({'MySQL-Error': str(e)}), 500)
+	finally:
+		#Close database connection
+		cursor.close()
+		db.close()
+
+	return jsonify({'scene': d})
 
 #---------------------------------------------------------------------------# 
 # Login
