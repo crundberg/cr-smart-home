@@ -13,7 +13,7 @@ class Upgrade:
 	def __init__(self):
 		self.log = Log()
 		self.error = 0
-		self.Version = "v0.1.7"
+		self.Version = "v0.1.8"
 	
 
 	#---------------------------------------------------------------------------# 
@@ -103,6 +103,16 @@ class Upgrade:
 			# Upgrade to v0.1.7
 			if (cmp(self.VersionToInt("v0.1.7"), self.VersionToInt(dbVersion)) > 0):	
 				self.SQLQuery("ALTER TABLE `ha_users` ADD `UserAdmin` INT(11) NOT NULL DEFAULT '1';")
+				
+			# Upgrade to v0.1.8
+			if (cmp(self.VersionToInt("v0.1.8"), self.VersionToInt(dbVersion)) > 0):
+				self.SQLQuery("CREATE TABLE ha_scenes (SceneId int(11) NOT NULL, SceneName varchar(250) NOT NULL, SceneDescription varchar(250) NOT NULL, SceneFavorite int(11) NOT NULL DEFAULT '0', SceneOrder int(11) NOT NULL DEFAULT '100') ENGINE=InnoDB DEFAULT CHARSET=latin1;")
+				self.SQLQuery("CREATE TABLE ha_scene_actions (ActionId int(11) NOT NULL, ActionSceneId int(11) NOT NULL, ActionLampId int(11) NOT NULL, ActionMode int(11) NOT NULL COMMENT '0=Off, 1=On, 2=Dim', ActionOrder int(11) NOT NULL DEFAULT '100') ENGINE=InnoDB DEFAULT CHARSET=latin1;")
+				self.SQLQuery("ALTER TABLE ha_scenes ADD PRIMARY KEY (SceneId);")
+				self.SQLQuery("ALTER TABLE ha_scene_actions ADD PRIMARY KEY (ActionId), ADD KEY ActionSceneId (ActionSceneId,ActionLampId), ADD KEY ActionLampId (ActionLampId);")
+				self.SQLQuery("ALTER TABLE ha_scenes MODIFY SceneId int(11) NOT NULL AUTO_INCREMENT;")
+				self.SQLQuery("ALTER TABLE ha_scene_actions MODIFY ActionId int(11) NOT NULL AUTO_INCREMENT;")
+				self.SQLQuery("ALTER TABLE ha_scene_actions ADD CONSTRAINT ha_scene_actions_ibfk_1 FOREIGN KEY (ActionSceneId) REFERENCES ha_scenes (SceneId) ON DELETE CASCADE ON UPDATE NO ACTION, ADD CONSTRAINT ha_scene_actions_ibfk_2 FOREIGN KEY (ActionLampId) REFERENCES ha_lamp_objects (LampId) ON DELETE CASCADE ON UPDATE NO ACTION;")
 			
 			# Upgrade finished
 			if (self.error == 0):

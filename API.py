@@ -147,6 +147,25 @@ def powerroom():
 	return jsonify({'lamp': json})
 	
 #---------------------------------------------------------------------------# 
+# Send power to lamps in scene
+#---------------------------------------------------------------------------#
+@app.route('/ha/api/v1.0/lamps/scene', methods=['POST'])
+@auth.login_required
+def powerscene():
+	if not request.json or not 'id' in request.json:
+		abort(400)
+	
+	lamp = Lamp()
+	result = lamp.PowerScene(request.json['id'])
+
+	json = {
+		'id': request.json['id'],
+		'result': result
+	}
+
+	return jsonify({'scene': json})
+	
+#---------------------------------------------------------------------------# 
 # Send power to all lamps
 #---------------------------------------------------------------------------#
 @app.route('/ha/api/v1.0/lamps/all', methods=['POST'])

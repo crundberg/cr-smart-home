@@ -111,6 +111,21 @@ class CrSmartHomeTestCase(unittest.TestCase):
 		self.assertEqual(response.status_code, 200)		
 		#self.assertEqual("%s" % self.API_Password, {"result": 8})
 		
+	def test_API_power_scene(self):
+		# API
+		headers = {
+			'Authorization': 'Basic ' + b64encode("{0}:{1}".format(self.API_Username, self.API_Password))
+		}
+		
+		data = json.dumps({
+			'id': "1"
+		})
+
+		tester = app.test_client(self)
+		response = tester.post('/ha/api/v1.0/lamps/scene', data=data, follow_redirects=True, headers=headers, content_type='application/json', environ_base={'HTTP_USER_AGENT': self.API_UserAgent})
+		self.assertEqual(response.status_code, 200)		
+		#self.assertEqual("%s" % self.API_Password, {"result": 8})
+		
 	def test_API_power_all(self):
 		# API
 		headers = {
@@ -151,10 +166,11 @@ class CrSmartHomeTestCase(unittest.TestCase):
 		assert lamp.LampCmd("1234") == 'Done!'
 		lamp.LampPower(10, "Test", 1, "1234")
 		lamp.LampPower(10, "Test", 0, "1234")
-		assert lamp.PowerSingle(10, "1") == 'Done!'
-		assert lamp.PowerSingle(10, "0") == 'Done!'
+		assert lamp.PowerSingle(2, "1") == 'Done!'
+		assert lamp.PowerSingle(2, "0") == 'Done!'
 		assert lamp.PowerRoom(1, "1") == 'Done!'
 		assert lamp.PowerRoom(1, "0") == 'Done!'
+		lamp.PowerScene(1)
 		assert lamp.PowerAll("1") == 'Done!'
 		assert lamp.PowerAll("0") == 'Done!'
 		lamp.Schedule()

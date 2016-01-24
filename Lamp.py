@@ -4,6 +4,7 @@ import MySQLdb
 import pi_switch
 import sys
 import logging
+import collections
 from Sun import Sun
 from Config import Config
 from Log import Log
@@ -271,6 +272,69 @@ class Lamp:
 			db.close()
 		
 		return 'Done!'
+		
+	#---------------------------------------------------------------------------# 
+	# Power to lamps in scene
+	#---------------------------------------------------------------------------# 
+	def PowerScene(self, Id):
+		# Connect to database
+		db = MySQLdb.connect(Config.DbHost, Config.DbUser, Config.DbPassword, Config.DbName)
+		cursor = db.cursor()
+		
+		lamps = []
+		
+		try:
+			# Select lamps from database
+			cursor.execute("SELECT SceneName, ActionMode, LampId, LampCmdOn, LampCmdOff FROM ha_scene_actions LEFT JOIN ha_scenes ON ActionSceneId=SceneId LEFT JOIN ha_lamp_objects ON ActionLampId=LampId WHERE ActionSceneId = %s", (Id))
+			results = cursor.fetchall()
+		
+			# Loop result from database
+			for row in results:
+				# Move result to variables
+				dbSceneName = row[0]
+				dbMode = row[1]
+				dbLampId = row[2]
+				dbCmdOn = row[3]
+				dbCmdOff = row[4]
+				
+				d = collections.OrderedDict()
+				d['Id'] = dbLampId
+				d['PowerOn'] = dbMode
+				lamps.append(d)
+			
+				if (dbMode == 1):
+					# Send power on command
+					self.LampCmd(dbCmdOn)
+				else:
+					# Send power of command
+					self.LampCmd(dbCmdOff)
+			
+			# Log
+			self.log.info('API', 'Sending power to scene "%s"...' % dbSceneName)
+	
+		except MySQLdb.Error, e:
+			# Log exceptions
+			try:
+				self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+	
+			except IndexError:
+				self.log.error('API', 'MySQL Error: %s' % str(e))
+			
+		# Update database
+		try:
+			cursor.execute("UPDATE ha_lamp_objects JOIN ha_scene_actions ON ActionLampId = LampId AND ActionSceneId = %s SET LampPowerOnMan = ActionMode", (Id))
+			db.commit()
+		except MySQLdb.Error, e:
+			db.rollback()
+			self.log.error('API', 'MySQL Error [%d]: %s' % (e.args[0], e.args[1]))
+		except:
+			self.log.error('API', 'Unexpected error: %s' % (sys.exc_info()[0]))
+		finally:
+			# Close database connection
+			cursor.close()
+			db.close()
+		
+		return lamps
 		
 	#---------------------------------------------------------------------------# 
 	# Power to all lamps
