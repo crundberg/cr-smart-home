@@ -333,13 +333,14 @@ def get_dashboard():
 		results = cursor.fetchone()
 	
 		#Move database row to variables
-		d = collections.OrderedDict()
-		d['Id'] = results[0]
-		d['Name'] = results[1]
-		d['Data'] = json.loads(results[2])
-		d['Status'] = results[3]
-		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
-		sun.append(d)
+		if results[2]:
+			d = collections.OrderedDict()
+			d['Id'] = results[0]
+			d['Name'] = results[1]
+			d['Data'] = json.loads(results[2])
+			d['Status'] = results[3]
+			d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
+			sun.append(d)
 		
 		#---------------------------------------------------------------------------# 
 		# Weather
@@ -348,13 +349,14 @@ def get_dashboard():
 		results = cursor.fetchone()
 	
 		#Move database row to variables
-		d = collections.OrderedDict()
-		d['Id'] = results[0]
-		d['Name'] = results[1]
-		d['Data'] = json.loads(results[2])
-		d['Status'] = results[3]
-		d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
-		weather.append(d)
+		if results[2]:
+			d = collections.OrderedDict()
+			d['Id'] = results[0]
+			d['Name'] = results[1]
+			d['Data'] = json.loads(results[2])
+			d['Status'] = results[3]
+			d['LastUpdated'] = results[4].strftime("%Y-%m-%d %H:%M:%S")
+			weather.append(d)
 	except MySQLdb.Error, e:
 		#Log exceptions
 		try:
