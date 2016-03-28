@@ -20,7 +20,11 @@ class Sun:
 		self.longitude = 0
 		self.sunriseOffset = 0
 		self.sunsetOffset = 0
+		self.daylightSaving = 0
 		self.GetSettings()
+
+		if time.localtime( ).tm_isdst:
+			self.daylightSaving = 1
 		
 		if self.latitude < -90 or self.latitude > 90:
 			self.log.error('Server', 'Invalid latitude value')
@@ -136,7 +140,7 @@ class Sun:
 		UT_rise = self.adjustTime(T_rise - lngHour)
 	
 		#Convert UT value to local time zone of latitude/longitude
-		localT_rise = self.adjustTime(UT_rise + self.localOffset)
+		localT_rise = self.adjustTime(UT_rise + self.localOffset + self.daylightSaving)
 	
 		#Conversion
 		h_rise = int(localT_rise)
@@ -198,7 +202,7 @@ class Sun:
 		UT_set = self.adjustTime(T_set - lngHour)
 	
 		#Convert UT value to local time zone of latitude/longitude
-		localT_set = self.adjustTime(UT_set + self.localOffset)
+		localT_set = self.adjustTime(UT_set + self.localOffset + self.daylightSaving)
 	
 		#Conversion
 		h_set = int(localT_set)
