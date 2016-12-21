@@ -1,0 +1,15 @@
+{
+	"version" : "v0.1",
+	
+	"DbHost" : "localhost",
+	"DbUser" : "crsmarthome",
+	"DbPassword" : "homesmartcr",
+	"DbName" : "crsmarthome",
+	
+	"GPIO_RF" : 5,
+	
+	"sunriseOffset" : 0,
+	"sunsetOffset" : -60,
+	
+	"secret" : "MySuperSecretKey"
+}
